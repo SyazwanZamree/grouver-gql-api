@@ -1,10 +1,12 @@
 {
-  "name": "000-workdir",
+  "name": "grouver-gql-api",
   "version": "0.0.1",
   "description": "grouver graphql API",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "neutrino start",
+    "build": "rimraf build && neutrino build",
+    "clean": "rimraf build && rimraf node_modules"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,13 @@
   "bugs": {
     "url": "https://github.com/SyazwanZamree/grouver-gql-api/issues"
   },
-  "homepage": "https://github.com/SyazwanZamree/grouver-gql-api#readme"
+  "homepage": "https://github.com/SyazwanZamree/grouver-gql-api#readme",
+  "devDependencies": {
+    "@neutrinojs/node": "^8.3.0",
+    "neutrino": "^8.3.0",
+    "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
