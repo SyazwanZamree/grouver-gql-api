@@ -6,6 +6,8 @@ module.exports = {
         targets: {
           node: '6.10'
         }
-    }]
+    }],
+    '@neutrinojs/airbnb-base',
+    '@neutrinojs/jest'
   ]
 };
