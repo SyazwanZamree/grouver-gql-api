@@ -1,12 +1,12 @@
 import express from 'express';
 
-const api = express.Router()
+const api = new express.Router();
 
 api.get('/', (req, res) => {
   res.status(200).json({
     message: 'Welcome to Grouver Graphql API',
     owner: 'Syazwan Zamree',
-    author: 'Syazwan Zamree'
+    author: 'Syazwan Zamree',
   });
 });
 
