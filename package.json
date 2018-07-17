@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "neutrino start",
+    "test": "neutrino test",
     "build": "rimraf build && neutrino build",
     "clean": "rimraf build && rimraf node_modules"
   },
@@ -19,6 +20,8 @@
   },
   "homepage": "https://github.com/SyazwanZamree/grouver-gql-api#readme",
   "devDependencies": {
+    "@neutrinojs/airbnb-base": "^8.3.0",
+    "@neutrinojs/jest": "^8.3.0",
     "@neutrinojs/node": "^8.3.0",
     "neutrino": "^8.3.0",
     "rimraf": "^2.6.2"
