@@ -9,7 +9,7 @@ const hmr = module.hot ? 'activated' : 'deactivated';
 
 app.get('/', (req, res) => {
   res.status(200).json({
-    message: `go to http://127.0.0.1:${port}/api for Grouve GraphQL API`,
+    message: `go to http://127.0.0.1:${port}/api for Grouve API`,
   });
 }).listen(port, () => {
   console.log('Welcome to Grouver GraphQL API');
