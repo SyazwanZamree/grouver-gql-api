@@ -6,6 +6,7 @@ const gqlserver = new GraphQLServer({
   resolvers,
 });
 
+// only start this when localhost:8000/api/gqlserver is accessed
 gqlserver.start(() => console.log('gql server is running'));
 
 export default gqlserver;
