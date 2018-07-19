@@ -1,8 +1,10 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import gqlserver from './graphql/index';
 
 const api = new express.Router();
 const port = process.env.PORT || 8000;
+const db = 'mongodb://localhost/test';
 
 api.get('/', (req, res) => {
   res.status(200).json({
@@ -12,6 +14,8 @@ api.get('/', (req, res) => {
     author: 'Syazwan Zamree',
   });
 
+  mongoose.Promise = Promise;
+  mongoose.connect(db);
   api.use('/gqlserver', gqlserver.express);
 });
 
