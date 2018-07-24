@@ -1,3 +1,266 @@
+# query
 type Query {
   hello(name: String): String!
+  # end example demo
+  getComments: Comment
+  getDiscussions: [Discussion]
+  getProjects: [Project]
+  getTags: [Tag]
+  getTasks: [Task]
+  getUsers: [User]
+  getReplies: [Reply]
+  getAvatar: [Avatar]
+  getTeams: [Team]
+  getNotifications: [Notification]
+  getScores: [Score]
+  getBadges: [Badge]
+}
+
+# mutation
+type Mutation {
+  addComment(input: CommentInput): Comment
+  addDiscussion(input: DiscussionInput): Discussion
+  addProject(input: ProjectInput): Project
+  # addTag(input: TagInput): Tag
+  addTask(input: TaskInput): Task
+  addUser(input: UserInput): User
+  addReply(input: ReplyInput): Reply
+  addAvatar(input: AvatarInput): Avatar
+  addTeam(input: TeamInput): Team
+  addNotification(input: NotificationInput): Notification
+  addScore(input: ScoreInput): Score
+  addBadge(input: BadgeInput): Badge
+}
+
+# input
+input CommentInput {
+  body: String
+  createdAt: String
+  createdBy: UserInput
+  upvote: Int
+  replies: [ReplyInput]
+}
+
+input DiscussionInput {
+  body: String
+  createdAt: String
+  createdBy: UserInput
+  upvote: Int
+  replies: [ReplyInput]
+}
+
+input ProjectInput {
+  displayName: String
+  name: String
+  description: String
+  avatar: AvatarInput
+  memberList: [UserInput]
+  taskList: [TaskInput]
+  createdAt: String
+  createdBy: UserInput
+}
+
+input TaskInput {
+  title: String
+  subtitle: String
+  # tags: [Tag]
+  # status: StatusInput
+  parent: [TaskInput]
+  children: [TaskInput]
+  assignedTo: [UserInput]
+  # level: LevelInput
+  dueDate: String
+  involvedUsers: [UserInput]
+  comments: [CommentInput]
+  createdAt: String
+  createdBy: UserInput
+}
+
+input UserInput {
+  displayName: String
+  name: String
+  email: String
+  password: String
+  avatar: AvatarInput
+  team: TeamInput
+  projects: [ProjectInput]
+  notification: [NotificationInput]
+  score: ScoreInput
+  Badge: BadgeInput
+  createdAt: String
+}
+
+input ReplyInput {
+  body: String
+  createdAt: String
+  createdBy: UserInput
+  upvote: Int
+}
+
+input AvatarInput {
+  smallUrl: String
+  mediumUrl: String
+  largeUrl: String
+}
+
+# input StatusInput {
+#
+# }
+
+# input LevelInput {
+#
+# }
+
+input TeamInput {
+  displayName: String
+  name: String
+  description: String
+  avatar: AvatarInput
+  memberList: [UserInput]
+  projectList: [ProjectInput]
+  createdAt: String
+  createdBy: UserInput
+}
+
+input NotificationInput {
+  name: String
+}
+
+input ScoreInput {
+  gold: Int
+  silver: Int
+  bronze: Int
+}
+
+input BadgeInput {
+  name: String
+}
+
+# input TagInput {
+#
+# }
+
+# type
+type Comment {
+  id: String
+  body: String
+  createdAt: String
+  createdBy: User
+  upvote: Int
+  replies: [Reply]
+}
+
+type Reply {
+  id: String
+  body: String
+  createdAt: String
+  createdBy: User
+  upvote: Int
+}
+
+type Discussion {
+  id: String
+  body: String
+  createdAt: String
+  createdBy: User
+  upvote: Int
+  replies: [Reply]
+}
+
+type Project {
+  id: String
+  displayName: String
+  name: String
+  description: String
+  avatar: Avatar
+  memberList: [User]
+  taskList: [Task]
+  createdAt: String
+  createdBy: User
+}
+
+type User {
+  id: String
+  displayName: String
+  name: String
+  email: String
+  password: String
+  avatar: Avatar
+  team: Team
+  projects: [Project]
+  notifications: [Notification]
+  scores: Score
+  Badge: Badge
+  createdAt: String
+}
+
+type Avatar {
+  smallUrl: String
+  mediumUrl: String
+  largeUrl: String
+}
+
+type Team {
+  id: String
+  displayName: String
+  name: String
+  description: String
+  avatar: Avatar
+  memberList: [User]
+  projectList: [Project]
+  createdAt: String
+  createdBy: User
+}
+
+type Task {
+  id: String
+  title: String
+  subtitle: String
+  tags: [Tag]
+  status: Status
+  parent: [Task]
+  children: [Task]
+  assignedTo: [User]
+  level: Level
+  dueDate: String
+  involvedUsers: [User]
+  comments: [Comment]
+  createdAt: String
+  createdBy: User
+}
+
+type Score {
+  gold: Int
+  silver: Int
+  bronze: Int
+}
+
+type Badge {
+  id: String
+  name: String
+}
+
+type Notification {
+  id: String
+  name: String
+}
+
+# enum type
+enum Tag {
+  TEST
+  UJI
+  CUBA
+}
+
+enum Status {
+  TODO
+  INPPROGRESS
+  DONE
+}
+
+
+enum Level {
+  EASY
+  MEDIUM
+  HARD
 }
