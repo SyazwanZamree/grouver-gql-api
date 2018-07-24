@@ -18,6 +18,6 @@ app.get('/', (req, res) => {
   console.log(`Port: ${port}`);
   console.log(`Environment: ${env}`);
   console.log(`Hot reload: ${hmr}`);
-
-  app.use('/api', api);
 });
+
+app.use('/api', api);

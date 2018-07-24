@@ -19,16 +19,16 @@
     "url": "https://github.com/SyazwanZamree/grouver-gql-api/issues"
   },
   "homepage": "https://github.com/SyazwanZamree/grouver-gql-api#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "graphql-yoga": "^1.14.12",
+    "mongoose": "^5.2.4"
+  },
   "devDependencies": {
     "@neutrinojs/airbnb-base": "^8.3.0",
     "@neutrinojs/jest": "^8.3.0",
     "@neutrinojs/node": "^8.3.0",
     "neutrino": "^8.3.0",
     "rimraf": "^2.6.2"
-  },
-  "dependencies": {
-    "express": "^4.16.3",
-    "graphql-yoga": "^1.14.12",
-    "mongoose": "^5.2.4"
   }
 }

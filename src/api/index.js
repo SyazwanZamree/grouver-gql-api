@@ -4,7 +4,7 @@ import gqlserver from './graphql/index';
 
 const api = new express.Router();
 const port = process.env.PORT || 8000;
-const db = 'mongodb://localhost/test';
+const db = 'mongodb://localhost:27017/test';
 
 api.get('/', (req, res) => {
   res.status(200).json({
@@ -15,7 +15,7 @@ api.get('/', (req, res) => {
   });
 
   mongoose.Promise = Promise;
-  mongoose.connect(db);
+  mongoose.connect(db, { useNewUrlParser: true });
   api.use('/gqlserver', gqlserver.express);
 });
 
