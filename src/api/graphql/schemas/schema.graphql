@@ -2,37 +2,47 @@
 type Query {
   hello(name: String): String!
   # end example demo
+  getAvatar: [Avatar]
+  getBadges: [Badge]
   getComments: Comment
   getDiscussions: [Discussion]
-  getProjects: [Project]
-  getTags: [Tag]
-  getTasks: [Task]
-  getUsers: [User]
-  getReplies: [Reply]
-  getAvatar: [Avatar]
-  getTeams: [Team]
   getNotifications: [Notification]
+  getProjects: [Project]
+  getReplies: [Reply]
   getScores: [Score]
-  getBadges: [Badge]
+  # getTags: [Tag]
+  getTasks: [Task]
+  getTeams: [Team]
+  getUsers: [User]
 }
 
 # mutation
 type Mutation {
+  addAvatar(input: AvatarInput): Avatar
+  addBadge(input: BadgeInput): Badge
   addComment(input: CommentInput): Comment
   addDiscussion(input: DiscussionInput): Discussion
+  addNotification(input: NotificationInput): Notification
   addProject(input: ProjectInput): Project
+  addReply(input: ReplyInput): Reply
+  addScore(input: ScoreInput): Score
   # addTag(input: TagInput): Tag
   addTask(input: TaskInput): Task
-  addUser(input: UserInput): User
-  addReply(input: ReplyInput): Reply
-  addAvatar(input: AvatarInput): Avatar
   addTeam(input: TeamInput): Team
-  addNotification(input: NotificationInput): Notification
-  addScore(input: ScoreInput): Score
-  addBadge(input: BadgeInput): Badge
+  addUser(input: UserInput): User
 }
 
 # input
+input AvatarInput {
+  smallUrl: String
+  mediumUrl: String
+  largeUrl: String
+}
+
+input BadgeInput {
+  name: String
+}
+
 input CommentInput {
   body: String
   createdAt: String
@@ -49,6 +59,14 @@ input DiscussionInput {
   replies: [ReplyInput]
 }
 
+# input LevelInput {
+#
+# }
+
+input NotificationInput {
+  name: String
+}
+
 input ProjectInput {
   displayName: String
   name: String
@@ -59,6 +77,27 @@ input ProjectInput {
   createdAt: String
   createdBy: UserInput
 }
+
+input ReplyInput {
+  body: String
+  createdAt: String
+  createdBy: UserInput
+  upvote: Int
+}
+
+input ScoreInput {
+  gold: Int
+  silver: Int
+  bronze: Int
+}
+
+# input StatusInput {
+#
+# }
+
+# input TagInput {
+#
+# }
 
 input TaskInput {
   title: String
@@ -72,6 +111,17 @@ input TaskInput {
   dueDate: String
   involvedUsers: [UserInput]
   comments: [CommentInput]
+  createdAt: String
+  createdBy: UserInput
+}
+
+input TeamInput {
+  displayName: String
+  name: String
+  description: String
+  avatar: AvatarInput
+  memberList: [UserInput]
+  projectList: [ProjectInput]
   createdAt: String
   createdBy: UserInput
 }
@@ -90,57 +140,18 @@ input UserInput {
   createdAt: String
 }
 
-input ReplyInput {
-  body: String
-  createdAt: String
-  createdBy: UserInput
-  upvote: Int
-}
-
-input AvatarInput {
+# type
+type Avatar {
   smallUrl: String
   mediumUrl: String
   largeUrl: String
 }
 
-# input StatusInput {
-#
-# }
-
-# input LevelInput {
-#
-# }
-
-input TeamInput {
-  displayName: String
-  name: String
-  description: String
-  avatar: AvatarInput
-  memberList: [UserInput]
-  projectList: [ProjectInput]
-  createdAt: String
-  createdBy: UserInput
-}
-
-input NotificationInput {
+type Badge {
+  id: String
   name: String
 }
 
-input ScoreInput {
-  gold: Int
-  silver: Int
-  bronze: Int
-}
-
-input BadgeInput {
-  name: String
-}
-
-# input TagInput {
-#
-# }
-
-# type
 type Comment {
   id: String
   body: String
@@ -150,13 +161,6 @@ type Comment {
   replies: [Reply]
 }
 
-type Reply {
-  id: String
-  body: String
-  createdAt: String
-  createdBy: User
-  upvote: Int
-}
 
 type Discussion {
   id: String
@@ -165,6 +169,11 @@ type Discussion {
   createdBy: User
   upvote: Int
   replies: [Reply]
+}
+
+type Notification {
+  id: String
+  name: String
 }
 
 type Project {
@@ -179,37 +188,18 @@ type Project {
   createdBy: User
 }
 
-type User {
+type Reply {
   id: String
-  displayName: String
-  name: String
-  email: String
-  password: String
-  avatar: Avatar
-  team: Team
-  projects: [Project]
-  notifications: [Notification]
-  scores: Score
-  Badge: Badge
-  createdAt: String
-}
-
-type Avatar {
-  smallUrl: String
-  mediumUrl: String
-  largeUrl: String
-}
-
-type Team {
-  id: String
-  displayName: String
-  name: String
-  description: String
-  avatar: Avatar
-  memberList: [User]
-  projectList: [Project]
+  body: String
   createdAt: String
   createdBy: User
+  upvote: Int
+}
+
+type Score {
+  gold: Int
+  silver: Int
+  bronze: Int
 }
 
 type Task {
@@ -229,23 +219,40 @@ type Task {
   createdBy: User
 }
 
-type Score {
-  gold: Int
-  silver: Int
-  bronze: Int
+type Team {
+  id: String
+  displayName: String
+  name: String
+  description: String
+  avatar: Avatar
+  memberList: [User]
+  projectList: [Project]
+  createdAt: String
+  createdBy: User
 }
 
-type Badge {
+type User {
   id: String
+  displayName: String
   name: String
-}
-
-type Notification {
-  id: String
-  name: String
+  email: String
+  password: String
+  avatar: Avatar
+  team: Team
+  projects: [Project]
+  notifications: [Notification]
+  scores: Score
+  Badge: Badge
+  createdAt: String
 }
 
 # enum type
+enum Level {
+  EASY
+  MEDIUM
+  HARD
+}
+
 enum Tag {
   TEST
   UJI
@@ -256,11 +263,4 @@ enum Status {
   TODO
   INPPROGRESS
   DONE
-}
-
-
-enum Level {
-  EASY
-  MEDIUM
-  HARD
 }

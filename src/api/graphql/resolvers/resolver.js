@@ -206,10 +206,10 @@ const resolvers = {
       console.log('parent', parent);
       return parent;
     },
-    getTags: (parent) => {
-      console.log('parent', parent);
-      return parent;
-    },
+    // getTags: (parent) => {
+    //   console.log('parent', parent);
+    //   return parent;
+    // },
     getTasks: (parent) => {
       console.log('parent', parent);
       return parent;
@@ -244,9 +244,11 @@ const resolvers = {
     },
   },
   Mutation: {
-    addComment: (parent, { input }) => {
+    addComment: (parent, { input }, { models, db }) => {
       const newComment = new Comment(input);
       console.log('input >>>>', newComment);
+      console.log('models >>>>', models);
+      console.log('db >>>>', db);
       return newComment;
     },
     addDiscussion: (parent, { input }) => {

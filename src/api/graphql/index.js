@@ -1,6 +1,11 @@
 import { GraphQLServer } from 'graphql-yoga';
 import resolvers from './resolvers/resolver';
 
+const context = {
+  models: 'this is a model',
+  db: 'this is db setup',
+};
+
 const gqlserver = new GraphQLServer({
   // use mergeTypes(typesArray) from merge-graphql-schemas
   // to merge modular schema types.
@@ -10,6 +15,7 @@ const gqlserver = new GraphQLServer({
   // see https://github.com/prismagraphql/graphql-yoga/tree/master/examples/modular-resolvers
   // for more infos
   resolvers,
+  context,
 });
 
 gqlserver.start();
