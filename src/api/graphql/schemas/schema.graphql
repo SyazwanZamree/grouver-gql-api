@@ -136,7 +136,7 @@ input UserInput {
   projects: [ProjectInput]
   notification: [NotificationInput]
   score: ScoreInput
-  Badge: BadgeInput
+  badge: BadgeInput
   createdAt: String
 }
 
@@ -242,7 +242,7 @@ type User {
   projects: [Project]
   notifications: [Notification]
   scores: Score
-  Badge: Badge
+  badges: [Badge]
   createdAt: String
 }
 
@@ -255,8 +255,8 @@ enum Level {
 
 enum Tag {
   TEST
-  UJI
-  CUBA
+  JOG
+  RUNNING
 }
 
 enum Status {
