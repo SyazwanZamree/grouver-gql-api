@@ -1,8 +1,9 @@
 import { GraphQLServer } from 'graphql-yoga';
 import resolvers from './resolvers/resolver';
+import models from './../database/models/index';
 
 const context = {
-  models: 'this is a model',
+  models,
   db: 'this is db setup',
 };
 
