@@ -1,0 +1,15 @@
+import mongoose, { Schema } from 'mongoose';
+
+const LevelSchema = new Schema({
+  _id: {
+    type: Schema.Types.ObjectId,
+    auto: true,
+  },
+  level: {
+    type: String,
+    enum: ['EASY', 'MEDIUM', 'HARD'],
+    required: true,
+  },
+});
+
+export default mongoose.model('Level', LevelSchema);
