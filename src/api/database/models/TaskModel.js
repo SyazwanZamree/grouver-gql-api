@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const TaskSchema = new mongoose.Schema({
+const TaskSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     auto: true,
@@ -33,10 +33,6 @@ const TaskSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
-  status: {
-    type: Schema.Types.ObjectId,
-    ref: 'Status',
-  },
   dueDate: {
     type: Date,
     default: Date.now,

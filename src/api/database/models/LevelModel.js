@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const LevelSchema = new mongoose.Schema({
+const LevelSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     auto: true,

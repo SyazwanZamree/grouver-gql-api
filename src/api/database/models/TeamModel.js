@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const TeamSchema = new mongoose.Schema({
+const TeamSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     auto: true,

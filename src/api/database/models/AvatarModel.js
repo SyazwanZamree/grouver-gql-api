@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const AvatarSchema = new mongoose.Schema({
+const AvatarSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     auto: true,

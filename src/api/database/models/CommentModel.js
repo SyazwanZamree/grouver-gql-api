@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const CommentSchema = new mongoose.Schema({
+const CommentSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
     auto: true,
