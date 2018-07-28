@@ -190,10 +190,10 @@ class Notification {
 
 const resolvers = {
   Query: {
-    hello: (parent, { name }) => {
-      console.log('>>>>>>', name);
-      return name;
-    },
+    // hello: (parent, { name }) => {
+    //   console.log('>>>>>>', name);
+    //   return name;
+    // },
     getComments: (parent) => {
       console.log('parent', parent);
       return parent;
