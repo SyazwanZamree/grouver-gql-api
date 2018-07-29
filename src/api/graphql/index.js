@@ -1,5 +1,5 @@
 import { GraphQLServer } from 'graphql-yoga';
-import resolvers from './resolvers/resolver';
+import resolvers from './resolvers/index';
 import typeDefs from './schemas/index';
 import models from './../database/models/index';
 
