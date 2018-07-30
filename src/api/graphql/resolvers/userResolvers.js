@@ -11,11 +11,20 @@ const userResolvers = {
   },
   Mutation: {
     createUser: async (parent, { input }, { models }) => {
-      const { displayName: display } = input;
-      const takenDisplayName = await models.User.findOne({ displayName: display });
+      const {
+        displayName: inputDisplayName,
+        email: inputEmail,
+      } = input;
 
-      if (takenDisplayName) {
-        throw new Error('name is taken, please provide unique name');
+      const takenDisplayName = await models.User.findOne({ displayName: inputDisplayName });
+      const takenEmail = await models.User.findOne({ email: inputEmail });
+
+      if (takenDisplayName && takenEmail) {
+        throw new Error('user already signed up using this email');
+      } else if (takenDisplayName) {
+        throw new Error('display name is taken');
+      } else if (takenEmail) {
+        throw new Error('email address is already in the DB');
       }
 
       const User = new models.User(input);
