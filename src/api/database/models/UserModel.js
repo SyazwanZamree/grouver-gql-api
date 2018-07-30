@@ -8,6 +8,7 @@ const UserSchema = new Schema({
   displayName: {
     type: String,
     required: true,
+    unique: true,
   },
   name: {
     type: String,
