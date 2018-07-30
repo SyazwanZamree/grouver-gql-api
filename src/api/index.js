@@ -4,7 +4,9 @@ import gqlserver from './graphql/index';
 
 const api = new express.Router();
 const port = process.env.PORT || 8000;
-const db = 'mongodb://localhost:27017/test';
+const db = 'mongodb://localhost:27017/grouver-db';
+// const db = 'mongodb://localhost:27017/bugboo-api';
+// mongodb://localhost/bugboo-api
 
 api.get('/', (req, res) => {
   res.status(200).json({
