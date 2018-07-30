@@ -1,41 +1,34 @@
-class User {
-  constructor({
-    displayName,
-    name,
-    email,
-    password,
-    avatar,
-    team,
-    projects,
-    notification,
-    scores,
-    badges,
-    createdAt,
-  }) {
-    this.displayName = displayName;
-    this.name = name;
-    this.email = email;
-    this.password = password;
-    this.avatar = avatar;
-    this.team = team;
-    this.projects = projects;
-    this.notifications = notification;
-    this.scores = scores;
-    this.badges = badges;
-    this.createdAt = createdAt;
-  }
-}
-
 const userResolvers = {
   Query: {
-    getUsers: (parent) => {
-      console.log('parent', parent);
-      return parent;
+    getUsers: async (parent, args, { models }) => {
+      const Users = await models.User.find();
+      return Users;
+    },
+    getUser: async (parent, id, { models }) => {
+      const User = await models.User.findById(id);
+      return User;
     },
   },
   Mutation: {
-    addUser: (parent, { input }) => {
-      const newUser = new User(input);
+    createUser: async (parent, { input }, { models }) => {
+      const { displayName: display } = input;
+      const takenDisplayName = await models.User.findOne({ displayName: display });
+
+      if (takenDisplayName) {
+        throw new Error('name is taken, please provide unique name');
+      }
+
+      const User = new models.User(input);
+
+      User.save()
+        .then(d => console.log('data: ', d))
+        .catch(e => console.log('error: ', e));
+
+      return User;
+    },
+    updateUser: (parent, { input }) => {
+      const newUser = 'Hello me';
+      console.log('>>>>', input);
       return newUser;
     },
   },

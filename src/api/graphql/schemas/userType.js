@@ -1,17 +1,19 @@
 export default `
   type Query {
     getUsers: [User]
+    getUser(id: ID!): User
   }
 
   type Mutation {
-    addUser(input: UserInput): User
+    createUser(input: UserInput): User
+    updateUser(input: UserInput): User
   }
 
   input UserInput {
-    displayName: String
-    name: String
-    email: String
-    password: String
+    displayName: String!
+    name: String!
+    email: String!
+    password: String!
     avatar: AvatarInput
     team: TeamInput
     projects: [ProjectInput]
