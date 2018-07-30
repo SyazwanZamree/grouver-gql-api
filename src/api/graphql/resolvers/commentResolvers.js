@@ -24,6 +24,7 @@ const commentResolvers = {
   Mutation: {
     addComment: (parent, { input }, { models }) => {
       const newComment = new Comment(input);
+      console.log('>> models', models);
       return newComment;
     },
   },
