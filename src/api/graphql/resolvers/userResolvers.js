@@ -54,7 +54,7 @@ const userResolvers = {
         }],
       });
 
-      if (takenProps.length) throw new Error('sorry guys');
+      if (takenProps.length) throw new Error('email/display name is taken');
 
       const checkError = (e) => {
         if (e) throw new Error('cannot update user');
