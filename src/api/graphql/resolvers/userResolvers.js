@@ -37,6 +37,25 @@ const userResolvers = {
       return user;
     },
     updateUser: async (parent, { id, input }, { models }) => {
+      const {
+        displayName: inputDisplayName,
+        email: inputEmail,
+      } = input;
+
+      const takenProps = await models.User.find({
+        $and: [{
+          $or: [
+            { displayName: inputDisplayName },
+            { email: inputEmail },
+          ],
+        },
+        {
+          $nor: [await models.User.findById(id)],
+        }],
+      });
+
+      if (takenProps.length) throw new Error('sorry guys');
+
       const checkError = (e) => {
         if (e) throw new Error('cannot update user');
       };
