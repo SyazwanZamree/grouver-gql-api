@@ -6,7 +6,7 @@ export default `
 
   type Mutation {
     createUser(input: UserInput): User
-    updateUser(input: UserInput): User
+    updateUser(id: ID!, input: UserInput): User
   }
 
   input UserInput {
