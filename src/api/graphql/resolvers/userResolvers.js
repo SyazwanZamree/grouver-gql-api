@@ -4,7 +4,8 @@ const userResolvers = {
       const Users = await models.User.find();
       return Users;
     },
-    getUser: async (parent, id, { models }) => {
+    getUser: async (parent, { id }, { models }) => {
+      console.log('id: ', id);
       const User = await models.User.findById(id);
       return User;
     },
@@ -27,18 +28,26 @@ const userResolvers = {
         throw new Error('email address is already in the DB');
       }
 
-      const User = new models.User(input);
+      const user = new models.User(input);
 
-      User.save()
+      user.save()
         .then(d => console.log('data: ', d))
         .catch(e => console.log('error: ', e));
 
-      return User;
+      return user;
     },
-    updateUser: (parent, { input }) => {
-      const newUser = 'Hello me';
-      console.log('>>>>', input);
-      return newUser;
+    updateUser: async (parent, { id, input }, { models }) => {
+      const checkError = (e) => {
+        if (e) throw new Error('cannot update user');
+      };
+
+      const user = await models.User.findByIdAndUpdate(
+        id,
+        { $set: input },
+        e => checkError(e),
+      );
+
+      return user;
     },
   },
 };
