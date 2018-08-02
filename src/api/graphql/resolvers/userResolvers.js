@@ -1,16 +1,19 @@
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
-      const Users = await models.User.find();
-      return Users;
+      const users = await models.User.find()
+      .then(d => d)
+      .catch(e => console.log('e', e));
+
+      return users;
     },
     getUser: async (parent, { id }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
-      const User = await models.User.findById(id)
+      const user = await models.User.findById(id)
         .then(d => d)
         .catch(e => console.log('e', e));
 
-      return User;
+      return user;
     },
   },
   Mutation: {
@@ -76,7 +79,7 @@ const userResolvers = {
     },
     deleteUser: async (parent, { id }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
-      
+
       const user = await models.User.findByIdAndRemove(id)
         .then(d => d)
         .catch(e => console.log('e', e));
