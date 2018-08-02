@@ -5,8 +5,11 @@ const userResolvers = {
       return Users;
     },
     getUser: async (parent, { id }, { models }) => {
-      console.log('id: ', id);
-      const User = await models.User.findById(id);
+      if (!(await models.User.findById(id))) throw new Error('no such id in db');
+      const User = await models.User.findById(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
       return User;
     },
   },
@@ -28,15 +31,16 @@ const userResolvers = {
         throw new Error('email address is already in the DB');
       }
 
-      const user = new models.User(input);
-
-      user.save()
-        .then(d => console.log('data: ', d))
+      const user = new models.User(input)
+        .save()
+        .then(d => d)
         .catch(e => console.log('error: ', e));
 
       return user;
     },
     updateUser: async (parent, { id, input }, { models }) => {
+      if (!(await models.User.findById(id))) throw new Error('no such id in db');
+
       const {
         displayName: inputDisplayName,
         email: inputEmail,
@@ -64,7 +68,18 @@ const userResolvers = {
         id,
         { $set: input },
         e => checkError(e),
-      );
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return user;
+    },
+    deleteUser: async (parent, { id }, { models }) => {
+      if (!(await models.User.findById(id))) throw new Error('no such id in db');
+      
+      const user = await models.User.findByIdAndRemove(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
 
       return user;
     },
