@@ -2,8 +2,8 @@ const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
       const users = await models.User.find()
-      .then(d => d)
-      .catch(e => console.log('e', e));
+        .then(d => d)
+        .catch(e => console.log('e', e));
 
       return users;
     },
