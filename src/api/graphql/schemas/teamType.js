@@ -1,6 +1,7 @@
 export default `
   type Query {
     getTeams: [Team]
+    getTeam(id: ID!): Team
   }
 
   type Mutation {
@@ -8,13 +9,23 @@ export default `
   }
 
   input TeamInput {
+    displayName: String!
+    name: String!
+    description: String
+    avatar: AvatarInput
+    memberList: [UserInput]
+    projectList: [ProjectInput]
+    createdAt: String!
+    createdBy: UserInput
+  }
+
+  input UpdateTeamInput {
     displayName: String
     name: String
     description: String
     avatar: AvatarInput
     memberList: [UserInput]
     projectList: [ProjectInput]
-    createdAt: String
     createdBy: UserInput
   }
 
