@@ -7,7 +7,7 @@ export default `
   type Mutation {
     createUser(input: UserInput): User
     updateUser(id: ID!, input: UpdateUserInput): User
-    deleteUser(id: ID!): User 
+    deleteUser(id: ID!): User
   }
 
   input UserInput {
@@ -35,7 +35,6 @@ export default `
     notification: [NotificationInput]
     score: ScoreInput
     badge: BadgeInput
-    createdAt: String
   }
 
   type User {
