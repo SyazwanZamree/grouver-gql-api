@@ -22,9 +22,20 @@ class Team {
 
 const teamResolvers = {
   Query: {
-    getTeams: (parent) => {
-      console.log('parent', parent);
-      return parent;
+    getTeams: async (parent, args, { models }) => {
+      const teams = await models.Team.find()
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return teams;
+    },
+    getTeam: async (parent, { id }, { models }) => {
+      if (!(await models.Team.findById(id))) throw new Error('no such id in db');
+      const team = await models.Team.findById(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return team;
     },
   },
   Mutation: {
