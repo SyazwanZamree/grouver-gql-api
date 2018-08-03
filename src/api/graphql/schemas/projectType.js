@@ -1,10 +1,13 @@
 export default `
   type Query {
     getProjects: [Project]
+    getProject(id: ID!): Project
   }
 
   type Mutation {
-    addProject(input: ProjectInput): Project
+    createProject(input: ProjectInput): Project
+    updateProject(id: ID!, input: UpdateProjectInput): Project
+    deleteProject(id: ID!): Project
   }
 
   input ProjectInput {
@@ -16,6 +19,15 @@ export default `
     taskList: [TaskInput]
     createdAt: String
     createdBy: UserInput
+  }
+
+  input UpdateProjectInput {
+    displayName: String
+    name: String
+    description: String
+    avatar: AvatarInput
+    memberList: [UserInput]
+    taskList: [TaskInput]
   }
 
   type Project {
