@@ -35,8 +35,6 @@ const TaskSchema = new Schema({
   }],
   dueDate: {
     type: Date,
-    default: Date.now,
-    required: true,
   },
   involvedUsers: [{
     type: Schema.Types.ObjectId,
@@ -54,7 +52,6 @@ const TaskSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
 });
 

@@ -1,46 +1,56 @@
-class Task {
-  constructor({
-    title,
-    subtitle,
-    tags,
-    status,
-    parent,
-    children,
-    assignedTo,
-    level,
-    dueDate,
-    involvedUsers,
-    comments,
-    createdAt,
-    createdBy,
-  }) {
-    this.title = title;
-    this.subtitle = subtitle;
-    this.tags = tags;
-    this.status = status;
-    this.parent = parent;
-    this.children = children;
-    this.assignedTo = assignedTo;
-    this.level = level;
-    this.dueDate = dueDate;
-    this.involvedUsers = involvedUsers;
-    this.comments = comments;
-    this.createdAt = createdAt;
-    this.createdBy = createdBy;
-  }
-}
-
 const taskResolvers = {
   Query: {
-    getTasks: (parent) => {
-      console.log('parent', parent);
-      return parent;
+    getTasks: async (parent, args, { models }) => {
+      const tasks = await models.Task.find()
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return tasks;
+    },
+    getTask: async (parent, { id }, { models }) => {
+      if (!(await models.Task.findById(id))) throw new Error('no such id in db');
+
+      const task = await models.Task.findById(id)
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return task;
     },
   },
   Mutation: {
-    addTask: (parent, { input }) => {
-      const newTask = new Task(input);
-      return newTask;
+    createTask: async (parent, { input }, { models }) => {
+      const task = new models.Task(input)
+        .save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      return task;
+    },
+    updateTask: async (parent, { id, input }, { models }) => {
+      if (!(await models.Task.findById(id))) throw new Error('no such id in db');
+
+      const checkError = (e) => {
+        if (e) throw new Error('cannot update team');
+      };
+
+      const task = await models.Task.findByIdAndUpdate(
+        id,
+        { $set: input },
+        e => checkError(e),
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return task;
+    },
+    deleteTask: async (parent, { id }, { models }) => {
+      if (!(await models.Task.findById(id))) throw new Error('no such id in db');
+
+      const task = await models.Task.findByIdAndRemove(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return task;
     },
   },
 };
