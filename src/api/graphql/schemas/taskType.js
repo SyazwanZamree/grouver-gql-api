@@ -1,10 +1,13 @@
 export default `
   type Query {
     getTasks: [Task]
+    getTask(id: ID!): Task
   }
 
   type Mutation {
-    addTask(input: TaskInput): Task
+    createTask(input: TaskInput): Task
+    updateTask(id: ID!, input: UpdateTaskInput): Task
+    deleteTask(id: ID!): Task
   }
 
   input TaskInput {
@@ -18,6 +21,17 @@ export default `
     comments: [CommentInput]
     createdAt: String
     createdBy: UserInput
+  }
+
+  input UpdateTaskInput {
+    title: String
+    subtitle: String
+    parent: [TaskInput]
+    children: [TaskInput]
+    assignedTo: [UserInput]
+    dueDate: String
+    involvedUsers: [UserInput]
+    comments: [CommentInput]
   }
 
   type Task {
