@@ -8,6 +8,7 @@ const TeamSchema = new Schema({
   displayName: {
     type: String,
     required: true,
+    unique: true,
   },
   name: {
     type: String,
@@ -36,7 +37,6 @@ const TeamSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
 });
 
