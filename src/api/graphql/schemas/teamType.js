@@ -5,7 +5,9 @@ export default `
   }
 
   type Mutation {
-    addTeam(input: TeamInput): Team
+    createTeam(input: TeamInput): Team
+    updateTeam(id: ID!, input: UpdateTeamInput): Team
+    deleteTeam(id: ID!): Team
   }
 
   input TeamInput {
@@ -15,7 +17,7 @@ export default `
     avatar: AvatarInput
     memberList: [UserInput]
     projectList: [ProjectInput]
-    createdAt: String!
+    createdAt: String
     createdBy: UserInput
   }
 
