@@ -34,7 +34,7 @@ const teamResolvers = {
 
       if (!(await models.Team.findById(id))) throw new Error('no such id in db');
 
-      const takenProps = await models.User.find({
+      const takenProps = await models.Team.find({
         $and: [{ displayName: inputDisplayName }, { $nor: [await models.Team.findById(id)] }],
       });
 
