@@ -10,17 +10,17 @@ export default `
   input CommentInput {
     body: String
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
     upvote: Int
-    replies: [ReplyInput]
+    replies: [ID]
   }
 
   type Comment {
     id: ID!
     body: String
     createdAt: String
-    createdBy: User
+    createdBy: ID
     upvote: Int
-    replies: [Reply]
+    replies: [ID]
   }
 `;

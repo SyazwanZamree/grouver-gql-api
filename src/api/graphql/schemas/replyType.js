@@ -10,7 +10,7 @@ export default `
   input ReplyInput {
     body: String
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
     upvote: Int
   }
 
@@ -18,7 +18,7 @@ export default `
     id: ID!
     body: String
     createdAt: String
-    createdBy: User
+    createdBy: ID
     upvote: Int
   }
 `;

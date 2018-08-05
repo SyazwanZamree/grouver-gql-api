@@ -14,21 +14,21 @@ export default `
     displayName: String!
     name: String!
     description: String
-    avatar: AvatarInput
-    memberList: [UserInput]
-    projectList: [ProjectInput]
+    avatar: ID
+    memberList: [ID]
+    projectList: [ID]
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
   }
 
   input UpdateTeamInput {
     displayName: String
     name: String
     description: String
-    avatar: AvatarInput
-    memberList: [UserInput]
-    projectList: [ProjectInput]
-    createdBy: UserInput
+    avatar: ID
+    memberList: [ID]
+    projectList: [ID]
+    createdBy: ID
   }
 
   type Team {
@@ -36,10 +36,10 @@ export default `
     displayName: String
     name: String
     description: String
-    avatar: Avatar
-    memberList: [User]
-    projectList: [Project]
+    avatar: ID
+    memberList: [ID]
+    projectList: [ID]
     createdAt: String
-    createdBy: User
+    createdBy: ID
   }
 `;
