@@ -8,6 +8,7 @@ const projectResolvers = {
       return projects;
     },
     getProject: async (parent, { id }, { models }) => {
+      console.log('parent project: ', parent);
       if (!(await models.Project.findById(id))) throw new Error('no such id in db');
 
       const project = await models.Project.findById(id)

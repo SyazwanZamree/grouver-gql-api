@@ -1,3 +1,5 @@
+// import mongoose from 'mongoose';
+
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
@@ -9,7 +11,7 @@ const userResolvers = {
     },
     getUser: async (parent, { id }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
-      const user = await models.User.findById(id)
+      const user = await models.User.findById(id).populate('projects').exec()
         .then(d => d)
         .catch(e => console.log('e', e));
 
@@ -41,7 +43,7 @@ const userResolvers = {
 
       return user;
     },
-    updateUser: async (parent, { id, input }, { models }) => {
+    updateUser: async (parent, { id, input, projects }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
 
       const {
@@ -69,11 +71,20 @@ const userResolvers = {
 
       const user = await models.User.findByIdAndUpdate(
         id,
-        { $set: input },
+        {
+          $set: {
+            input,
+            projects: {
+              _id: projects.id,
+            },
+          },
+        },
         e => checkError(e),
       )
         .then(d => d)
-        .catch(e => console.log('e', e));
+        .catch((e) => {
+          console.log('e: ', e);
+        });
 
       return user;
     },
@@ -85,6 +96,14 @@ const userResolvers = {
         .catch(e => console.log('e', e));
 
       return user;
+    },
+  },
+  User: {
+    id: parent => parent.id,
+    displayName: parent => parent.displayName,
+    projects: async (parent, arg, { models }) => {
+      const project = await models.Project.findById(parent.projects);
+      return project;
     },
   },
 };

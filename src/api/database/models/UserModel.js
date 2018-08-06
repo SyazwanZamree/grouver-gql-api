@@ -31,10 +31,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Team',
   },
-  projects: [{
+  projects: {
     type: Schema.Types.ObjectId,
     ref: 'Project',
-  }],
+  },
   notifications: [{
     type: Schema.Types.ObjectId,
     ref: 'Notification',

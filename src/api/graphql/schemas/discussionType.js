@@ -15,7 +15,7 @@ export default `
     replies: [ID]
   }
 
-  type Discussion {
+  type Discussion implements Post {
     id: ID!
     body: String
     createdAt: String

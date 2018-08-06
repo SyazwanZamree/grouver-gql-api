@@ -14,7 +14,7 @@ export default `
     upvote: Int
   }
 
-  type Reply {
+  type Reply implements Post {
     id: ID!
     body: String
     createdAt: String

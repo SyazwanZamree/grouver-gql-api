@@ -15,7 +15,7 @@ export default `
     replies: [ID]
   }
 
-  type Comment {
+  type Comment implements Post {
     id: ID!
     body: String
     createdAt: String

@@ -2,17 +2,15 @@ export default `
   type Query {
     getUsers: [User]
     getUser(id: ID!): User
-    getUserAvatar(id: ID!): Avatar
-    getUserTeam(id: ID!): Team
-    getUserProjects(id: ID!): Project
-    getUserNotifications(id: ID!): Notification
-    getUserScores(id: ID!): Score
-    getUserBadges(id: ID!): Badge
   }
 
   type Mutation {
     createUser(input: UserInput): User
-    updateUser(id: ID!, input: UpdateUserInput): User
+    updateUser(
+      id: ID!,
+      input: UpdateUserInput,
+      projects: UserProjectInput
+      ): User
     deleteUser(id: ID!): User
   }
 
@@ -21,12 +19,6 @@ export default `
     name: String!
     email: String!
     password: String!
-    avatar: ID
-    team: ID
-    projects: [ID]
-    notification: [ID]
-    score: ID
-    badge: [ID]
     createdAt: String
   }
 
@@ -37,7 +29,6 @@ export default `
     password: String
     avatar: ID
     team: ID
-    projects: [ID]
     notification: [ID]
     score: ID
     badge: ID
@@ -49,12 +40,12 @@ export default `
     name: String
     email: String
     password: String
-    avatar: ID
-    team: ID
-    projects: [ID]
-    notifications: [ID]
-    scores: ID
-    badges: [ID]
+    avatar: Avatar
+    team: Team
+    projects: Project
+    notifications: [Notification]
+    scores: Score
+    badges: [Badge]
     createdAt: String
   }
 `;

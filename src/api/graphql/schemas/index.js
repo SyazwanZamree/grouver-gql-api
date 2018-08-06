@@ -5,6 +5,7 @@ import commentType from './commentType';
 import discussionType from './discussionType';
 import levelType from './levelType';
 import notificationType from './notificationType';
+import postType from './postType';
 import projectType from './projectType';
 import replyType from './replyType';
 import scoreType from './scoreType';
@@ -21,6 +22,7 @@ const typesArray = [
   discussionType,
   levelType,
   notificationType,
+  postType,
   projectType,
   replyType,
   scoreType,

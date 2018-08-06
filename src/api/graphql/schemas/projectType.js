@@ -11,6 +11,7 @@ export default `
   }
 
   input ProjectInput {
+    id: ID
     displayName: String
     name: String
     description: String
@@ -19,6 +20,10 @@ export default `
     taskList: [ID]
     createdAt: String
     createdBy: ID
+  }
+
+  input UserProjectInput {
+    id: ID
   }
 
   input UpdateProjectInput {
