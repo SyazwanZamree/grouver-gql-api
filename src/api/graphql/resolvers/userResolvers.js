@@ -1,5 +1,3 @@
-// import mongoose from 'mongoose';
-
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
@@ -11,7 +9,7 @@ const userResolvers = {
     },
     getUser: async (parent, { id }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
-      const user = await models.User.findById(id).populate('projects').exec()
+      const user = await models.User.findById(id)
         .then(d => d)
         .catch(e => console.log('e', e));
 
@@ -69,22 +67,26 @@ const userResolvers = {
         if (e) throw new Error('cannot update user');
       };
 
+      const userProjects = [];
+
+      projects.forEach((e) => {
+        userProjects.push({
+          _id: e.id,
+        });
+      });
+
       const user = await models.User.findByIdAndUpdate(
         id,
         {
           $set: {
             input,
-            projects: {
-              _id: projects.id,
-            },
+            projects: userProjects,
           },
         },
         e => checkError(e),
       )
         .then(d => d)
-        .catch((e) => {
-          console.log('e: ', e);
-        });
+        .catch(e => console.log('e: ', e));
 
       return user;
     },
@@ -101,9 +103,13 @@ const userResolvers = {
   User: {
     id: parent => parent.id,
     displayName: parent => parent.displayName,
-    projects: async (parent, arg, { models }) => {
-      const project = await models.Project.findById(parent.projects);
-      return project;
+    projects: (parent, arg, { models }) => {
+      const userProjects = [];
+      parent.projects.forEach((e) => {
+        const project = models.Project.findById(e);
+        userProjects.push(project);
+      });
+      return userProjects;
     },
   },
 };
