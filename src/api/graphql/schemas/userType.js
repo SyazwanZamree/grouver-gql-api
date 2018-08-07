@@ -9,7 +9,7 @@ export default `
     updateUser(
       id: ID!,
       input: UpdateUserInput,
-      projects: UserProjectInput
+      projects: [UserProjectInput]
       ): User
     deleteUser(id: ID!): User
   }
@@ -42,7 +42,7 @@ export default `
     password: String
     avatar: Avatar
     team: Team
-    projects: Project
+    projects: [Project]
     notifications: [Notification]
     scores: Score
     badges: [Badge]
