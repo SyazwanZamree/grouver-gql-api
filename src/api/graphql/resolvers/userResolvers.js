@@ -1,3 +1,5 @@
+// import { ObjectId } from 'mongodb';
+
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
@@ -66,14 +68,44 @@ const userResolvers = {
       const checkError = (e) => {
         if (e) throw new Error('cannot update user');
       };
-
       const userProjects = [];
 
-      projects.forEach((e) => {
+      // if newProject is already in projects, do not push into userProjects projectsArr
+      // else, push it.
+      // well, not push array into array, but concat it!
+
+      // projects.forEach((el) => {
+      //   models.User.findById(id)
+      //     .then((d) => {
+      //       const projectsArr = d.projects;
+      //       console.log('projectsArr: ', projectsArr);
+      //
+      //       const newId = new ObjectId(el.id);
+      //       console.log('newId: ', newId);
+      //
+      //       if (projectsArr.indexOf(newId) <= -1) {
+      //         console.log('new id man');
+      //         userProjects.push({ _id: el.id });
+      //       } else {
+      //         console.log('already in');
+      //       }
+      //       console.log('so new one: ', userProjects);
+      //     })
+      //     .catch(err => console.log('e: ', err));
+      // });
+
+      // console.log('userProjects: ', userProjects);
+      // console.log('input: ', input);
+
+
+      projects.forEach((el) => {
         userProjects.push({
-          _id: e.id,
+          _id: el.id,
         });
       });
+
+      console.log('userProjects', userProjects);
+      console.log('input', input);
 
       const user = await models.User.findByIdAndUpdate(
         id,
@@ -82,6 +114,8 @@ const userResolvers = {
             input,
             projects: userProjects,
           },
+          // push: {
+          // },
         },
         e => checkError(e),
       )
