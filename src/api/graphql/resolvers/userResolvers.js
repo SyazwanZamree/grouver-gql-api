@@ -44,7 +44,9 @@ const userResolvers = {
       return user;
     },
     updateUser: async (parent, { id, input, projects }, { models }) => {
-      if (!(await models.User.findById(id))) throw new Error('no such id in db');
+      const user = await models.User.findById(id);
+
+      if (!user) throw new Error('no such id in db');
 
       const {
         displayName: inputDisplayName,
@@ -59,7 +61,7 @@ const userResolvers = {
           ],
         },
         {
-          $nor: [await models.User.findById(id)],
+          $nor: [user],
         }],
       });
 
@@ -68,61 +70,31 @@ const userResolvers = {
       const checkError = (e) => {
         if (e) throw new Error('cannot update user');
       };
+
       const userProjects = [];
-
-      // if newProject is already in projects, do not push into userProjects projectsArr
-      // else, push it.
-      // well, not push array into array, but concat it!
-
-      // projects.forEach((el) => {
-      //   models.User.findById(id)
-      //     .then((d) => {
-      //       const projectsArr = d.projects;
-      //       console.log('projectsArr: ', projectsArr);
-      //
-      //       const newId = new ObjectId(el.id);
-      //       console.log('newId: ', newId);
-      //
-      //       if (projectsArr.indexOf(newId) <= -1) {
-      //         console.log('new id man');
-      //         userProjects.push({ _id: el.id });
-      //       } else {
-      //         console.log('already in');
-      //       }
-      //       console.log('so new one: ', userProjects);
-      //     })
-      //     .catch(err => console.log('e: ', err));
-      // });
-
-      // console.log('userProjects: ', userProjects);
-      // console.log('input: ', input);
-
-
       projects.forEach((el) => {
-        userProjects.push({
-          _id: el.id,
-        });
+        if (user.projects.indexOf(el.id) <= -1) {
+          userProjects.push(el.id);
+        }
       });
 
-      console.log('userProjects', userProjects);
-      console.log('input', input);
+      const userUpdate = {
+        displayName: input.displayName || user.displayName,
+        name: input.name || user.name,
+        email: input.email || user.email,
+        password: input.password || user.password,
+        projects: user.projects.concat(userProjects),
+      };
 
-      const user = await models.User.findByIdAndUpdate(
+      const updatedUser = await models.User.findByIdAndUpdate(
         id,
-        {
-          $set: {
-            input,
-            projects: userProjects,
-          },
-          // push: {
-          // },
-        },
+        userUpdate,
         e => checkError(e),
       )
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
-      return user;
+      return updatedUser;
     },
     deleteUser: async (parent, { id }, { models }) => {
       if (!(await models.User.findById(id))) throw new Error('no such id in db');
