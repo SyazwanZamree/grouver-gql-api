@@ -45,45 +45,53 @@ const userResolvers = {
     },
     updateUser: async (parent, { id, input, projects }, { models }) => {
       const user = await models.User.findById(id);
+      const userProjects = [];
 
       if (!user) throw new Error('no such id in db');
+      if (input) {
+        const {
+          displayName: inputDisplayName,
+          email: inputEmail,
+        } = input;
 
-      const {
-        displayName: inputDisplayName,
-        email: inputEmail,
-      } = input;
+        const takenProps = await models.User.find({
+          $and: [{
+            $or: [
+              { displayName: inputDisplayName },
+              { email: inputEmail },
+            ],
+          },
+          {
+            $nor: [user],
+          }],
+        });
 
-      const takenProps = await models.User.find({
-        $and: [{
-          $or: [
-            { displayName: inputDisplayName },
-            { email: inputEmail },
-          ],
-        },
-        {
-          $nor: [user],
-        }],
-      });
-
-      if (takenProps.length) throw new Error('email/display name is taken');
+        if (takenProps.length) throw new Error('email/display name is taken');
+      }
 
       const checkError = (e) => {
         if (e) throw new Error('cannot update user');
       };
 
-      const userProjects = [];
-      projects.forEach((el) => {
-        if (user.projects.indexOf(el.id) <= -1) {
-          userProjects.push(el.id);
-        }
-      });
+      if (projects) {
+        projects.forEach((el) => {
+          if (user.projects.indexOf(el.id) <= -1) {
+            userProjects.push(el.id);
+          }
+        });
+      }
 
       const userUpdate = {
-        displayName: input.displayName || user.displayName,
-        name: input.name || user.name,
-        email: input.email || user.email,
-        password: input.password || user.password,
+        displayName: (input || user).displayName,
+        name: (input || user).name,
+        email: (input || user).email,
+        password: (input || user).password,
+        // avatar: (input || user).avatar,
+        // team: (input || user).team,
+        // score: (input || user).score,
         projects: user.projects.concat(userProjects),
+        // notifications: user.notifications.concat(userNotifications),
+        // badges: user.badges.concat(userBadges),
       };
 
       const updatedUser = await models.User.findByIdAndUpdate(

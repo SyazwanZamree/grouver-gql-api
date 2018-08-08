@@ -29,9 +29,7 @@ export default `
     password: String
     avatar: ID
     team: ID
-    notification: [ID]
     score: ID
-    badge: ID
   }
 
   type User {
