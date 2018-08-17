@@ -22,10 +22,6 @@ export default `
     createdBy: ID
   }
 
-  input UserProjectInput {
-    id: ID
-  }
-
   input UpdateProjectInput {
     displayName: String
     name: String
