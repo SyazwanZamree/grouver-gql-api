@@ -53,8 +53,8 @@ const userResolvers = {
     }, { models }) => {
       const user = await models.User.findById(id);
       const userProjects = [];
-      const userCreatedTask = [];
-      const userAssignedTask = [];
+      const userCreatedTasks = [];
+      const userAssignedTasks = [];
       const userDiscussions = [];
       const userComments = [];
       const userReplies = [];
@@ -101,7 +101,7 @@ const userResolvers = {
         console.log('this is tasksCreated: ', tasksCreated);
         tasksCreated.forEach((el) => {
           if (user.tasksCreated.indexOf(el.id) <= -1) {
-            userCreatedTask.push(el.id);
+            userCreatedTasks.push(el.id);
           }
         });
       }
@@ -111,7 +111,7 @@ const userResolvers = {
         console.log('this is tasksAssigned: ', tasksAssigned);
         tasksAssigned.forEach((el) => {
           if (user.tasksAssigned.indexOf(el.id) <= -1) {
-            userAssignedTask.push(el.id);
+            userAssignedTasks.push(el.id);
           }
         });
       }
@@ -156,8 +156,8 @@ const userResolvers = {
         // team: (input || user).team,
         // score: (input || user).score,
         projects: user.projects.concat(userProjects),
-        tasksCreated: user.tasksCreated.concat(userCreatedTask),
-        tasksAssigned: user.tasksAssigned.concat(userAssignedTask),
+        tasksCreated: user.tasksCreated.concat(userCreatedTasks),
+        tasksAssigned: user.tasksAssigned.concat(userAssignedTasks),
         // discussions: user.discussions.concat(userDiscussions),
         // comments: user.comments.concat(userComments),
         // replies: user.replies.concat(userReplies),
@@ -201,6 +201,14 @@ const userResolvers = {
         userProjects.push(project);
       });
       return userProjects;
+    },
+    tasksCreated: (parent, arg, { models }) => {
+      const userCreatedTask = [];
+      parent.tasksCreated.forEach((e) => {
+        const task = models.Task.findById(e);
+        userCreatedTask.push(task);
+      });
+      return userCreatedTask;
     },
     notifications: parent => parent.notifications,
     scores: parent => parent.scores,
