@@ -1,5 +1,3 @@
-// import { ObjectId } from 'mongodb';
-
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
@@ -43,11 +41,26 @@ const userResolvers = {
 
       return user;
     },
-    updateUser: async (parent, { id, input, projects }, { models }) => {
+    updateUser: async (parent, {
+      id,
+      input,
+      projects,
+      tasksCreated,
+      tasksAssigned,
+      discussions,
+      comments,
+      replies,
+    }, { models }) => {
       const user = await models.User.findById(id);
       const userProjects = [];
+      const userCreatedTask = [];
+      const userAssignedTask = [];
+      const userDiscussions = [];
+      const userComments = [];
+      const userReplies = [];
 
       if (!user) throw new Error('no such id in db');
+      // general user update via input i.e
       if (input) {
         const {
           displayName: inputDisplayName,
@@ -66,6 +79,7 @@ const userResolvers = {
           }],
         });
 
+        console.log('takenProps: ', takenProps);
         if (takenProps.length) throw new Error('email/display name is taken');
       }
 
@@ -73,6 +87,7 @@ const userResolvers = {
         if (e) throw new Error('cannot update user');
       };
 
+      // users projects update
       if (projects) {
         projects.forEach((el) => {
           if (user.projects.indexOf(el.id) <= -1) {
@@ -81,6 +96,57 @@ const userResolvers = {
         });
       }
 
+      // users task created update
+      if (tasksCreated) {
+        console.log('this is tasksCreated: ', tasksCreated);
+        tasksCreated.forEach((el) => {
+          if (user.tasksCreated.indexOf(el.id) <= -1) {
+            userCreatedTask.push(el.id);
+          }
+        });
+      }
+
+      // users task assigned update
+      if (tasksAssigned) {
+        console.log('this is tasksAssigned: ', tasksAssigned);
+        tasksAssigned.forEach((el) => {
+          if (user.tasksAssigned.indexOf(el.id) <= -1) {
+            userAssignedTask.push(el.id);
+          }
+        });
+      }
+
+      // users discussion created update
+      if (discussions) {
+        console.log('this is discussions: ', discussions);
+        discussions.forEach((el) => {
+          if (user.discussions.indexOf(el.id) <= -1) {
+            userDiscussions.push(el.id);
+          }
+        });
+      }
+
+      // users comments created update
+      if (comments) {
+        console.log('this is comments: ', comments);
+        comments.forEach((el) => {
+          if (user.comments.indexOf(el.id) <= -1) {
+            userComments.push(el.id);
+          }
+        });
+      }
+
+      // users reply created update
+      if (replies) {
+        console.log('this is replies: ', replies);
+        replies.forEach((el) => {
+          if (user.replies.indexOf(el.id) <= -1) {
+            userReplies.push(el.id);
+          }
+        });
+      }
+
+      // user update
       const userUpdate = {
         displayName: (input || user).displayName,
         name: (input || user).name,
@@ -90,6 +156,11 @@ const userResolvers = {
         // team: (input || user).team,
         // score: (input || user).score,
         projects: user.projects.concat(userProjects),
+        tasksCreated: user.tasksCreated.concat(userCreatedTask),
+        tasksAssigned: user.tasksAssigned.concat(userAssignedTask),
+        // discussions: user.discussions.concat(userDiscussions),
+        // comments: user.comments.concat(userComments),
+        // replies: user.replies.concat(userReplies),
         // notifications: user.notifications.concat(userNotifications),
         // badges: user.badges.concat(userBadges),
       };
@@ -97,6 +168,7 @@ const userResolvers = {
       const updatedUser = await models.User.findByIdAndUpdate(
         id,
         userUpdate,
+        { new: true },
         e => checkError(e),
       )
         .then(d => d)
@@ -117,6 +189,11 @@ const userResolvers = {
   User: {
     id: parent => parent.id,
     displayName: parent => parent.displayName,
+    name: parent => parent.name,
+    email: parent => parent.email,
+    password: parent => parent.password, // i dont think we can query even crypted password
+    avatar: parent => parent.avatar,
+    team: parent => parent.team,
     projects: (parent, arg, { models }) => {
       const userProjects = [];
       parent.projects.forEach((e) => {
@@ -125,6 +202,10 @@ const userResolvers = {
       });
       return userProjects;
     },
+    notifications: parent => parent.notifications,
+    scores: parent => parent.scores,
+    badges: parent => parent.badges,
+    createdAt: parent => parent.createdAt,
   },
 };
 
