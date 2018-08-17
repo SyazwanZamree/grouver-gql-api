@@ -27,13 +27,33 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Avatar',
   },
-  team: {
+  team: [{
     type: Schema.Types.ObjectId,
     ref: 'Team',
-  },
+  }],
   projects: [{
     type: Schema.Types.ObjectId,
     ref: 'Project',
+  }],
+  tasksCreated: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Task',
+  }],
+  tasksAssigned: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Task',
+  }],
+  discussions: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Discussion',
+  }],
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment',
+  }],
+  replies: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Reply',
   }],
   notifications: [{
     type: Schema.Types.ObjectId,
