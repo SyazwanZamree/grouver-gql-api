@@ -10,17 +10,17 @@ export default `
   input DiscussionInput {
     body: String
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
     upvote: Int
-    replies: [ReplyInput]
+    replies: [ID]
   }
 
-  type Discussion {
+  type Discussion implements Post {
     id: ID!
     body: String
     createdAt: String
-    createdBy: User
+    createdBy: ID
     upvote: Int
-    replies: [Reply]
+    replies: [ID]
   }
 `;

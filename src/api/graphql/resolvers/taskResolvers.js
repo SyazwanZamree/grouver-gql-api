@@ -1,6 +1,7 @@
 const taskResolvers = {
   Query: {
-    getTasks: async (parent, args, { models }) => {
+    getTasks: async (parent, args, { models, req }) => {
+      console.log('>>>>>: ', req.session);
       const tasks = await models.Task.find()
         .then(d => d)
         .catch(e => console.log('e: ', e));

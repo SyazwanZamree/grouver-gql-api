@@ -13,41 +13,42 @@ export default `
   input TaskInput {
     title: String
     subtitle: String
-    parent: [TaskInput]
-    children: [TaskInput]
-    assignedTo: [UserInput]
+    parent: [ID]
+    children: [ID]
+    assignedTo: [ID]
     dueDate: String
-    involvedUsers: [UserInput]
-    comments: [CommentInput]
+    involvedUsers: [ID]
+    comments: [ID]
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
   }
 
   input UpdateTaskInput {
     title: String
     subtitle: String
-    parent: [TaskInput]
-    children: [TaskInput]
-    assignedTo: [UserInput]
+    parent: [ID]
+    children: [ID]
+    assignedTo: [ID]
     dueDate: String
-    involvedUsers: [UserInput]
-    comments: [CommentInput]
+    involvedUsers: [ID]
+    comments: [ID]
   }
 
   type Task {
     id: ID!
     title: String
     subtitle: String
-    tags: [Tag]
-    status: Status
-    parent: [Task]
-    children: [Task]
-    assignedTo: [User]
-    level: Level
+    tags: [ID]
+    status: ID
+    applause: Int
+    parent: [ID]
+    children: [ID]
+    assignedTo: [ID]
+    level: ID
     dueDate: String
-    involvedUsers: [User]
-    comments: [Comment]
+    involvedUsers: [ID]
+    comments: [ID]
     createdAt: String
-    createdBy: User
+    createdBy: ID
   }
 `;

@@ -11,23 +11,24 @@ export default `
   }
 
   input ProjectInput {
+    id: ID
     displayName: String
     name: String
     description: String
-    avatar: AvatarInput
-    memberList: [UserInput]
-    taskList: [TaskInput]
+    avatar: ID
+    memberList: [ID]
+    taskList: [ID]
     createdAt: String
-    createdBy: UserInput
+    createdBy: ID
   }
 
   input UpdateProjectInput {
     displayName: String
     name: String
     description: String
-    avatar: AvatarInput
-    memberList: [UserInput]
-    taskList: [TaskInput]
+    avatar: ID
+    memberList: [ID]
+    taskList: [ID]
   }
 
   type Project {
@@ -35,10 +36,10 @@ export default `
     displayName: String
     name: String
     description: String
-    avatar: Avatar
-    memberList: [User]
-    taskList: [Task]
+    avatar: ID
+    memberList: [ID]
+    taskList: [ID]
     createdAt: String
-    createdBy: User
+    createdBy: ID
   }
 `;
