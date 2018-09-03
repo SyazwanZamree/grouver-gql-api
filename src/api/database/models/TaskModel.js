@@ -21,6 +21,12 @@ const TaskSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Status',
   },
+  dueDate: {
+    type: Date,
+  },
+  applause: {
+    type: Number,
+  },
   parent: [{
     type: Schema.Types.ObjectId,
     ref: 'Task',
@@ -30,13 +36,6 @@ const TaskSchema = new Schema({
     ref: 'Task',
   }],
   assignedTo: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  dueDate: {
-    type: Date,
-  },
-  involvedUsers: [{
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],

@@ -59,6 +59,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Notification',
   }],
+  // should be renamed to experience point and no ref involved
   scores: {
     type: Schema.Types.ObjectId,
     ref: 'Score',

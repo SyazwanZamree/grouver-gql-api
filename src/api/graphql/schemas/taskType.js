@@ -40,6 +40,7 @@ export default `
     subtitle: String
     tags: [ID]
     status: ID
+    applause: Int
     parent: [ID]
     children: [ID]
     assignedTo: [ID]

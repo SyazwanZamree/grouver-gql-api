@@ -60,7 +60,7 @@ const userResolvers = {
       const userReplies = [];
 
       if (!user) throw new Error('no such id in db');
-      // general user update via input i.e
+      // general user update via input
       if (input) {
         const {
           displayName: inputDisplayName,
@@ -79,7 +79,6 @@ const userResolvers = {
           }],
         });
 
-        console.log('takenProps: ', takenProps);
         if (takenProps.length) throw new Error('email/display name is taken');
       }
 
@@ -98,7 +97,6 @@ const userResolvers = {
 
       // users task created update
       if (tasksCreated) {
-        console.log('this is tasksCreated: ', tasksCreated);
         tasksCreated.forEach((el) => {
           if (user.tasksCreated.indexOf(el.id) <= -1) {
             userCreatedTasks.push(el.id);
@@ -108,7 +106,6 @@ const userResolvers = {
 
       // users task assigned update
       if (tasksAssigned) {
-        console.log('this is tasksAssigned: ', tasksAssigned);
         tasksAssigned.forEach((el) => {
           if (user.tasksAssigned.indexOf(el.id) <= -1) {
             userAssignedTasks.push(el.id);
@@ -116,9 +113,9 @@ const userResolvers = {
         });
       }
 
-      // users discussion created update
+      // users discussion created update; currently discussion cannot be created
+      // will be available after discussions model, type and resolvers are done
       if (discussions) {
-        console.log('this is discussions: ', discussions);
         discussions.forEach((el) => {
           if (user.discussions.indexOf(el.id) <= -1) {
             userDiscussions.push(el.id);
@@ -126,9 +123,9 @@ const userResolvers = {
         });
       }
 
-      // users comments created update
+      // users comments created update; currently comment cannot be created
+      // will be available after comments model, type and resolvers are done
       if (comments) {
-        console.log('this is comments: ', comments);
         comments.forEach((el) => {
           if (user.comments.indexOf(el.id) <= -1) {
             userComments.push(el.id);
@@ -136,9 +133,9 @@ const userResolvers = {
         });
       }
 
-      // users reply created update
+      // users reply created update; currently reply cannot be created
+      // will be available after replies model, type and resolvers are done
       if (replies) {
-        console.log('this is replies: ', replies);
         replies.forEach((el) => {
           if (user.replies.indexOf(el.id) <= -1) {
             userReplies.push(el.id);
@@ -158,9 +155,14 @@ const userResolvers = {
         projects: user.projects.concat(userProjects),
         tasksCreated: user.tasksCreated.concat(userCreatedTasks),
         tasksAssigned: user.tasksAssigned.concat(userAssignedTasks),
+        //
+        // update for discussions, comments and replies will be added later
+        // when their resolvers, models and types are done
+        //
         // discussions: user.discussions.concat(userDiscussions),
         // comments: user.comments.concat(userComments),
         // replies: user.replies.concat(userReplies),
+        // 
         // notifications: user.notifications.concat(userNotifications),
         // badges: user.badges.concat(userBadges),
       };
@@ -168,7 +170,6 @@ const userResolvers = {
       const updatedUser = await models.User.findByIdAndUpdate(
         id,
         userUpdate,
-        { new: true },
         e => checkError(e),
       )
         .then(d => d)
@@ -203,13 +204,33 @@ const userResolvers = {
       return userProjects;
     },
     tasksCreated: (parent, arg, { models }) => {
-      const userCreatedTask = [];
+      const userCreatedTasks = [];
       parent.tasksCreated.forEach((e) => {
         const task = models.Task.findById(e);
-        userCreatedTask.push(task);
+        userCreatedTasks.push(task);
       });
-      return userCreatedTask;
+      return userCreatedTasks;
     },
+    tasksAssigned: (parent, arg, { models }) => {
+      const userAssignedTasks = [];
+      parent.tasksAssigned.forEach((e) => {
+        const task = models.Task.findById(e);
+        userAssignedTasks.push(task);
+      });
+      return userAssignedTasks;
+    },
+    // add task assigned mark and applause count
+    // to do list:
+    //  1. discussionsCreated
+    //    - discussionsCreated applause count
+    //    - discussionsCreated follower count
+    //    - discussionsCreated status mark
+    //  2. commentsCreated
+    //    - commentsCreated applause count
+    //    - commentsCreated follower count
+    //    - commentsCreated status mark
+    //  3. repliesCreated
+    //    - repliesCreated applause count
     notifications: parent => parent.notifications,
     scores: parent => parent.scores,
     badges: parent => parent.badges,
