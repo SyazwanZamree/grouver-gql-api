@@ -1,3 +1,6 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 const userResolvers = {
   Query: {
     getUsers: async (parent, args, { models }) => {
@@ -17,18 +20,70 @@ const userResolvers = {
     },
   },
   Mutation: {
+    userSignUp: async (parent, {
+      name,
+      email,
+      username,
+      password,
+    }, { models }) => {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const takenUsername = await models.User.findOne({ username });
+      const takenEmail = await models.User.findOne({ email });
+
+      if (takenUsername && takenEmail) {
+        throw new Error('user already signed up using this email');
+      } else if (takenUsername) {
+        throw new Error('username is taken');
+      } else if (takenEmail) {
+        throw new Error('email address is already in the DB');
+      }
+
+      const user = new models.User({
+        username,
+        name,
+        email,
+        password: hashedPassword,
+      })
+        .save()
+        .then(d => d)
+        .catch(e => console.log('error: ', e));
+
+      return jwt.sign(
+        { user },
+        'secretTest',
+      );
+    },
+    userLogin: async (parent, { username, email, password }, { models }) => {
+      const user = username
+        ? await models.User.findOne({ username })
+        : await models.User.findOne({ email });
+
+      const valid = await bcrypt.compare(password, user.password);
+
+      if (!valid) throw new Error('not authorized');
+
+      return jwt.sign(
+        {
+          email: user.email,
+          username: user.username,
+          password: user.password,
+        },
+        'secretTest',
+        { expiresIn: '1d' },
+      );
+    },
     createUser: async (parent, { input }, { models }) => {
       const {
-        displayName: inputDisplayName,
+        username: inputUsername,
         email: inputEmail,
       } = input;
 
-      const takenDisplayName = await models.User.findOne({ displayName: inputDisplayName });
+      const takenUsername = await models.User.findOne({ username: inputUsername });
       const takenEmail = await models.User.findOne({ email: inputEmail });
 
-      if (takenDisplayName && takenEmail) {
+      if (takenUsername && takenEmail) {
         throw new Error('user already signed up using this email');
-      } else if (takenDisplayName) {
+      } else if (takenUsername) {
         throw new Error('display name is taken');
       } else if (takenEmail) {
         throw new Error('email address is already in the DB');
@@ -63,14 +118,14 @@ const userResolvers = {
       // general user update via input
       if (input) {
         const {
-          displayName: inputDisplayName,
+          username: inputUsername,
           email: inputEmail,
         } = input;
 
         const takenProps = await models.User.find({
           $and: [{
             $or: [
-              { displayName: inputDisplayName },
+              { username: inputUsername },
               { email: inputEmail },
             ],
           },
@@ -145,7 +200,7 @@ const userResolvers = {
 
       // user update
       const userUpdate = {
-        displayName: (input || user).displayName,
+        username: (input || user).username,
         name: (input || user).name,
         email: (input || user).email,
         password: (input || user).password,
@@ -162,7 +217,7 @@ const userResolvers = {
         // discussions: user.discussions.concat(userDiscussions),
         // comments: user.comments.concat(userComments),
         // replies: user.replies.concat(userReplies),
-        // 
+        //
         // notifications: user.notifications.concat(userNotifications),
         // badges: user.badges.concat(userBadges),
       };
@@ -189,7 +244,7 @@ const userResolvers = {
   },
   User: {
     id: parent => parent.id,
-    displayName: parent => parent.displayName,
+    username: parent => parent.username,
     name: parent => parent.name,
     email: parent => parent.email,
     password: parent => parent.password, // i dont think we can query even crypted password
