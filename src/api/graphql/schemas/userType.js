@@ -5,6 +5,17 @@ export default `
   }
 
   type Mutation {
+    userSignUp(
+      name: String!
+      username: String!
+      email: String!
+      password: String!
+    ): String
+    userLogin(
+      email: String
+      username: String
+      password: String!
+    ): String
     createUser(input: UserInput): User
     updateUser(
       id: ID!,
@@ -20,7 +31,7 @@ export default `
   }
 
   input UserInput {
-    displayName: String!
+    username: String!
     name: String!
     email: String!
     password: String!
@@ -28,7 +39,7 @@ export default `
   }
 
   input UpdateUserInput {
-    displayName: String
+    username: String
     name: String
     email: String
     password: String
@@ -59,7 +70,7 @@ export default `
 
   type User {
     id: ID!
-    displayName: String
+    username: String
     name: String
     email: String
     password: String
