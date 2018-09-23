@@ -5,7 +5,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     auto: true,
   },
-  displayName: {
+  username: {
     type: String,
     required: true,
     unique: true,
