@@ -3,9 +3,9 @@ import resolvers from './resolvers/index';
 import typeDefs from './schemas/index';
 import models from './../database/models/index';
 
-const context = req => ({
+const context = d => ({
   models,
-  req,
+  req: d.request,
   db: 'this is db setup',
 });
 

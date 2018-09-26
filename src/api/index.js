@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
 import gqlserver from './graphql/index';
 
 const api = new express.Router();
@@ -18,7 +19,8 @@ api.get('/', (req, res) => {
 
   mongoose.Promise = Promise;
   mongoose.connect(db, { useNewUrlParser: true });
-  api.use('/gqlserver', gqlserver.express);
 });
+
+api.use('/gqlserver', bodyParser.json(), gqlserver.express);
 
 export default api;

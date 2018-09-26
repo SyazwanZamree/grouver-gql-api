@@ -23,6 +23,9 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  token: {
+    type: String,
+  },
   avatar: {
     type: Schema.Types.ObjectId,
     ref: 'Avatar',

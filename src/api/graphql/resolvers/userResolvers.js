@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const userResolvers = {
   Query: {
-    getUsers: async (parent, args, { models }) => {
+    getUsers: async (parent, args, { models, req }) => {
       const users = await models.User.find()
         .then(d => d)
         .catch(e => console.log('e', e));
@@ -48,10 +48,20 @@ const userResolvers = {
         .then(d => d)
         .catch(e => console.log('error: ', e));
 
-      return jwt.sign(
-        { user },
+      user.token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
         'secretTest',
       );
+
+      user.save()
+        .then(d => d)
+        .catch(e => console.log('error: ', e));
+
+      return user.token;
     },
     userLogin: async (parent, { username, email, password }, { models }) => {
       const user = username
@@ -62,15 +72,20 @@ const userResolvers = {
 
       if (!valid) throw new Error('not authorized');
 
-      return jwt.sign(
+      user.token = jwt.sign(
         {
-          email: user.email,
+          id: user.id,
           username: user.username,
-          password: user.password,
+          email: user.email,
         },
         'secretTest',
-        { expiresIn: '1d' },
       );
+
+      user.save()
+        .then(d => d)
+        .catch(e => console.log('error: ', e));
+
+      return user.token;
     },
     createUser: async (parent, { input }, { models }) => {
       const {
