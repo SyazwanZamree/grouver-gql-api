@@ -5,7 +5,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     auto: true,
   },
-  displayName: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -22,6 +22,9 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  token: {
+    type: String,
   },
   avatar: {
     type: Schema.Types.ObjectId,

@@ -1,12 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
 import gqlserver from './graphql/index';
 
 const api = new express.Router();
 const port = process.env.PORT || 8000;
 const db = 'mongodb://localhost:27017/grouver-gql-db';
-// const db = 'mongodb://localhost:27017/bugboo-api';
-// mongodb://localhost/bugboo-api
 
 api.get('/', (req, res) => {
   res.status(200).json({
@@ -18,7 +17,11 @@ api.get('/', (req, res) => {
 
   mongoose.Promise = Promise;
   mongoose.connect(db, { useNewUrlParser: true });
-  api.use('/gqlserver', gqlserver.express);
 });
+
+api.use('/gqlserver', (req, res, next) => {
+  bodyParser.json();
+  next();
+}, gqlserver.express);
 
 export default api;
