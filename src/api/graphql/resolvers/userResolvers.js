@@ -3,12 +3,11 @@ import jwt from 'jsonwebtoken';
 
 const userResolvers = {
   Query: {
-    getUsers: async (parent, args, { models, token }) => {
+    getUsers: async (parent, args, { models, user }) => {
+      if (!user) throw new Error('unauthorized');
       const users = await models.User.find()
         .then(d => d)
         .catch(e => console.log('e', e));
-
-      console.log('token: ', token);
       return users;
     },
     getUser: async (parent, { id }, { models }) => {

@@ -5,26 +5,39 @@ import resolvers from './resolvers/index';
 import typeDefs from './schemas/index';
 import models from './../database/models/index';
 
-function context(d) {
+async function context(d) {
   const {
     authorization,
   } = d.request.headers;
 
   const token = authorization ? authorization.split('Bearer ')[1] : undefined;
-  if (token !== undefined) {
-    jwt.verify(token, 'secretTest', (err, result) => {
-      if (err) console.log('err: ', err);
-      console.log('result: ', result.id);
-    });
-  } else {
-    console.log('token undefined');
-  }
+
+  const getUser = async () => {
+    if (token !== undefined) {
+      const valid = await jwt.verify(token, 'secretTest', (err, result) => {
+        if (err) throw new Error('invalid token');
+        return result;
+      });
+
+      if (valid) {
+        const user = await models.User.findById(valid.id)
+          .then(id => id)
+          .catch(e => console.log('e', e));
+
+        return user;
+      }
+    }
+    return null;
+  };
+
+  const user = await getUser(token)
+    .then(u => u)
+    .catch(e => console.log('error: ', e));
 
   return {
     models,
     req: d.request,
-    authorization,
-    token,
+    user,
     db: 'this is db setup',
   };
 }
