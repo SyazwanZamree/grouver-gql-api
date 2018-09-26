@@ -57,10 +57,6 @@ const userResolvers = {
         'secretTest',
       );
 
-      user.save()
-        .then(d => d)
-        .catch(e => console.log('error: ', e));
-
       return user.token;
     },
     userLogin: async (parent, { username, email, password }, { models }) => {
