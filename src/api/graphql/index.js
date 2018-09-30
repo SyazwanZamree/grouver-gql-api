@@ -30,15 +30,17 @@ async function context(d) {
     return null;
   };
 
-  const user = await getUser(token)
+  const userSession = await getUser(token)
     .then(u => u)
     .catch(e => console.log('error: ', e));
 
   return {
-    models,
     req: d.request,
-    user,
-    db: 'this is db setup',
+    models,
+    userSession,
+    teamSession: 'team',
+    projectSession: 'project',
+    postSession: 'post',
   };
 }
 
