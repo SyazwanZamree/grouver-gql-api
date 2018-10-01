@@ -31,7 +31,7 @@ const userResolvers = {
         throw new Error('email address is already in the DB');
       }
 
-      const user = new models.User({
+      const user = await new models.User({
         username,
         name,
         email,
@@ -41,7 +41,6 @@ const userResolvers = {
         .then(d => d)
         .catch(e => console.log('error: ', e));
 
-      // here, user.id is null :D haha
       const token = jwt.sign(
         {
           id: user.id,
@@ -84,7 +83,6 @@ const userResolvers = {
     }, { models, userSession }) => {
       if (!userSession) throw new Error('unauthorized');
 
-      const user = await models.User.findById(userSession.id);
       const userTeam = [];
       const userProjects = [];
       const userCreatedTasks = [];
@@ -92,32 +90,27 @@ const userResolvers = {
       const userDiscussions = [];
       const userComments = [];
       const userReplies = [];
+      const user = await models.User.findById(userSession.id);
+      const newUsername = input.username ? input.username : user.username;
+      const newEmail = input.email ? input.email : user.email;
+      const newName = input.name ? input.name : user.name;
+      const newPassword = (input.password && !(await bcrypt.compare(input.password, user.password)))
+        ? await bcrypt.hash(input.password, 10)
+        : user.password;
 
       if (!user) throw new Error('no such id in db');
-      // general user update via input
-      const updatedUsername = input.username ? input.username : user.username;
-      const updatedEmail = input.email ? input.email : user.email;
-      const updatedName = input.name ? input.name : user.name;
-
       if (input) {
         const propsIsTaken = await models.User.find({
           $and: [{
             $or: [
-              { username: updatedUsername },
-              { email: updatedEmail },
+              { username: newUsername },
+              { email: newEmail },
             ],
           },
-          {
-            $nor: [user],
-          }],
+          { $nor: [user] }],
         });
-
         if (propsIsTaken.length) throw new Error('email/display name is taken');
       }
-
-      const checkError = (e) => {
-        if (e) throw new Error('cannot update user');
-      };
 
       // users team update
       if (team) {
@@ -187,10 +180,10 @@ const userResolvers = {
 
       // user update. this does not works
       const userUpdate = {
-        username: updatedUsername,
-        name: updatedName,
-        email: updatedEmail,
-        // password: (input || user).password,
+        username: newUsername,
+        name: newName,
+        email: newEmail,
+        password: newPassword,
         // avatar: (input || user).avatar,
         // score: (input || user).score,
         team: user.team.concat(userTeam),
@@ -212,7 +205,9 @@ const userResolvers = {
       const updatedUser = await models.User.findByIdAndUpdate(
         userSession.id,
         userUpdate,
-        e => checkError(e),
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
       )
         .then(d => d)
         .catch(e => console.log('e: ', e));
@@ -234,7 +229,7 @@ const userResolvers = {
     username: parent => parent.username,
     name: parent => parent.name,
     email: parent => parent.email,
-    password: parent => parent.password, // i dont think we can query even crypted password
+    password: parent => parent.password,
     avatar: parent => parent.avatar,
     team: parent => parent.team,
     projects: (parent, arg, { models }) => {
