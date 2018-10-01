@@ -12,7 +12,7 @@ async function context(d) {
 
   const token = authorization ? authorization.split('Bearer ')[1] : undefined;
 
-  const getUser = async () => {
+  const getUserSession = async () => {
     if (token !== undefined) {
       const valid = await jwt.verify(token, 'secretTest', (err, result) => {
         if (err) throw new Error('invalid token');
@@ -30,7 +30,7 @@ async function context(d) {
     return null;
   };
 
-  const userSession = await getUser(token)
+  const userSession = await getUserSession()
     .then(u => u)
     .catch(e => console.log('error: ', e));
 
