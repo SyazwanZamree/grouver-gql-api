@@ -10,19 +10,20 @@ async function context(d) {
     authorization,
   } = d.request.headers;
 
-  const token = authorization ? authorization.split('Bearer ')[1] : undefined;
+  const token = await authorization ? authorization.split('Bearer ')[1] : undefined;
 
-  const getUserSession = async () => {
-    if (token !== undefined) {
-      const valid = await jwt.verify(token, 'secretTest', (err, result) => {
+  const getUserSession = async (x) => {
+    if (x !== undefined) {
+      const valid = jwt.verify(token, 'secretTest', (err, result) => {
         if (err) throw new Error('invalid token');
+
         return result;
       });
 
       if (valid) {
         const user = await models.User.findById(valid.id)
           .then(id => id)
-          .catch(e => console.log('e', e));
+          .catch(e => console.log('e ', e));
 
         return user;
       }
@@ -30,7 +31,7 @@ async function context(d) {
     return null;
   };
 
-  const userSession = await getUserSession()
+  const userSession = await getUserSession(token)
     .then(u => u)
     .catch(e => console.log('error: ', e));
 

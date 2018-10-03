@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 const userResolvers = {
   Query: {
     getUser: async (paret, args, { models, userSession }) => {
-      if (!userSession) throw new Error('unauthorized');
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
       const user = await models.User.findById(userSession.id)
         .then(d => d)
         .catch(e => console.log('e', e));
@@ -60,6 +61,16 @@ const userResolvers = {
       if (user === null) throw new Error('no user');
       if (!(await bcrypt.compare(password, user.password))) throw new Error('wrong password');
 
+      await models.User.findByIdAndUpdate(
+        user.id,
+        { invalidToken: false },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
       const token = jwt.sign(
         {
           id: user.id,
@@ -71,6 +82,21 @@ const userResolvers = {
 
       return token;
     },
+    userLogout: async (parent, args, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { invalidToken: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return user;
+    },
     updateUser: async (parent, {
       input,
       team,
@@ -81,7 +107,7 @@ const userResolvers = {
       comments,
       replies,
     }, { models, userSession }) => {
-      if (!userSession) throw new Error('unauthorized');
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const userTeam = [];
       const userProjects = [];
@@ -99,6 +125,7 @@ const userResolvers = {
         : user.password;
 
       if (!user) throw new Error('no such id in db');
+
       if (input) {
         const propsIsTaken = await models.User.find({
           $and: [{
@@ -215,7 +242,7 @@ const userResolvers = {
       return updatedUser;
     },
     deleteUser: async (parent, { models, userSession }) => {
-      if (!userSession) throw new Error('unauthorized');
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const user = await models.User.findByIdAndRemove(userSession.id)
         .then(d => d)
