@@ -15,7 +15,7 @@ export default `
       username: String
       password: String!
     ): String
-    userLogout: String
+    userLogout: User
     updateUser(
       input: UpdateUserInput,
       projects: [UserProjectInput]
@@ -72,6 +72,7 @@ export default `
     name: String
     email: String
     password: String
+    invalidToken: Boolean
     avatar: Avatar
     team: [Team]
     projects: [Project]
