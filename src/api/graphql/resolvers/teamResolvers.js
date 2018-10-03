@@ -1,7 +1,11 @@
 const teamResolvers = {
   Query: {
-    getTeams: async (parent, args, { models }) => {
-      const teams = await models.Team.find()
+    getTeams: async (parent, args, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const teams = await models.Team.find({
+        _id: { $in: userSession.team },
+      })
         .then(d => d)
         .catch(e => console.log('e', e));
 
@@ -17,15 +21,28 @@ const teamResolvers = {
     },
   },
   Mutation: {
-    createTeam: async (parent, { input }, { models }) => {
+    createTeam: async (parent, { input }, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
       const { displayName: inputDisplayName } = input;
 
       if ((await models.Team.find({ displayName: inputDisplayName })).length) throw new Error('taken displayName');
 
-      const team = new models.Team(input)
+      const team = await new models.Team(input)
         .save()
         .then(d => d)
         .catch(e => console.log('error', e));
+
+      await models.User.findByIdAndUpdate(
+        userSession.id,
+        { team: await userSession.team.concat(team.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
 
       return team;
     },

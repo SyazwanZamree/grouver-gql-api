@@ -99,7 +99,6 @@ const userResolvers = {
     },
     updateUser: async (parent, {
       input,
-      team,
       projects,
       tasksAssigned,
       tasksCreated,
@@ -109,7 +108,6 @@ const userResolvers = {
     }, { models, userSession }) => {
       if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
-      const userTeam = [];
       const userProjects = [];
       const userCreatedTasks = [];
       const userAssignedTasks = [];
@@ -137,15 +135,6 @@ const userResolvers = {
           { $nor: [user] }],
         });
         if (propsIsTaken.length) throw new Error('email/display name is taken');
-      }
-
-      // users team update
-      if (team) {
-        team.forEach((el) => {
-          if (user.team.indexOf(el.id) <= -1) {
-            userTeam.push(el.id);
-          }
-        });
       }
 
       // users projects update
@@ -213,7 +202,6 @@ const userResolvers = {
         password: newPassword,
         // avatar: (input || user).avatar,
         // score: (input || user).score,
-        team: user.team.concat(userTeam),
         projects: user.projects.concat(userProjects),
         tasksCreated: user.tasksCreated.concat(userCreatedTasks),
         tasksAssigned: user.tasksAssigned.concat(userAssignedTasks),
@@ -258,7 +246,14 @@ const userResolvers = {
     email: parent => parent.email,
     password: parent => parent.password,
     avatar: parent => parent.avatar,
-    team: parent => parent.team,
+    team: (parent, arg, { models }) => {
+      const userTeams = [];
+      parent.team.forEach((e) => {
+        const team = models.Team.findById(e);
+        userTeams.push(team);
+      });
+      return userTeams;
+    },
     projects: (parent, arg, { models }) => {
       const userProjects = [];
       parent.projects.forEach((e) => {
