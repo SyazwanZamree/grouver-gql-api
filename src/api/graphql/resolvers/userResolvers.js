@@ -246,6 +246,10 @@ const userResolvers = {
     email: parent => parent.email,
     password: parent => parent.password,
     avatar: parent => parent.avatar,
+    teamSession: (parent, args, { models }) => {
+      const userTeamSession = models.Team.findById(parent.teamSession);
+      return userTeamSession;
+    },
     team: (parent, arg, { models }) => {
       const userTeams = [];
       parent.team.forEach((e) => {
