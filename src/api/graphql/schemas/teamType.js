@@ -5,6 +5,8 @@ export default `
   }
 
   type Mutation {
+    teamLogOut: User
+    teamSignIn(id: ID!): User
     createTeam(input: TeamInput): Team
     updateTeam(id: ID!, input: UpdateTeamInput): Team
     deleteTeam(id: ID!): Team
