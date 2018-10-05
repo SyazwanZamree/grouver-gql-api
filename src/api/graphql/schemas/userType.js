@@ -15,7 +15,6 @@ export default `
       username: String
       password: String!
     ): String
-    teamLogin(_id: ID): User
     userLogout: User
     updateUser(
       input: UpdateUserInput,
