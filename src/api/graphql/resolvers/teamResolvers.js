@@ -21,6 +21,44 @@ const teamResolvers = {
     },
   },
   Mutation: {
+    teamSignIn: async (parent, { id }, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+      if (userSession.team.indexOf(id) <= -1) throw new Error('unauthorized: not users team');
+
+      const team = await models.Team.findById(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { teamSession: team.id },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return user;
+    },
+    teamLogOut: async (parent, args, { models, teamSession, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+      if (!teamSession) throw new Error('no team is signed in');
+
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { teamSession: null },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return user;
+    },
     createTeam: async (parent, { input }, { models, userSession }) => {
       if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
@@ -38,7 +76,7 @@ const teamResolvers = {
         { team: await userSession.team.concat(team.id) },
         { new: true },
         (e) => {
-          if (e) throw new Error('cannot update user');
+          if (e) throw new Error('cannot update team');
         },
       )
         .then(d => d)
@@ -81,6 +119,11 @@ const teamResolvers = {
       return team;
     },
   },
+  // Team: {
+  //   user: (parent, args, { models }) => {
+  //     const user = parent.
+  //   }
+  // }
 };
 
 export default teamResolvers;
