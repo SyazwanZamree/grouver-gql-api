@@ -6,15 +6,9 @@ import typeDefs from './schemas/index';
 import models from './../database/models/index';
 
 async function context(d) {
-  const {
-    authorization,
-  } = d.request.headers;
-
-  const token = await authorization ? authorization.split('Bearer ')[1] : undefined;
-
   const getUserSession = async (x) => {
     if (x !== undefined) {
-      const valid = jwt.verify(token, 'secretTest', (err, result) => {
+      const valid = jwt.verify(x, 'secretTest', (err, result) => {
         if (err) throw new Error('invalid token');
 
         return result;
@@ -23,7 +17,7 @@ async function context(d) {
       if (valid) {
         const user = await models.User.findById(valid.id)
           .then(id => id)
-          .catch(e => console.log('e ', e));
+          .catch(e => console.log('e: ', e));
 
         return user;
       }
@@ -31,6 +25,10 @@ async function context(d) {
     return null;
   };
 
+  const {
+    authorization,
+  } = d.request.headers;
+  const token = await authorization ? authorization.split('Bearer ')[1] : undefined;
   const userSession = await getUserSession(token)
     .then(u => u)
     .catch(e => console.log('error: ', e));
@@ -39,7 +37,7 @@ async function context(d) {
     req: d.request,
     models,
     userSession,
-    teamSession: 'team',
+    teamSession: userSession.teamSession,
     projectSession: 'project',
     postSession: 'post',
   };
