@@ -1,6 +1,7 @@
 const teamResolvers = {
   Query: {
     getTeams: async (parent, args, { models, userSession }) => {
+      // this is not needed. user.teams can be queried from user.
       if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const teams = await models.Team.find({
@@ -10,14 +11,6 @@ const teamResolvers = {
         .catch(e => console.log('e', e));
 
       return teams;
-    },
-    getTeam: async (parent, { id }, { models }) => {
-      if (!(await models.Team.findById(id))) throw new Error('no such id in db');
-      const team = await models.Team.findById(id)
-        .then(d => d)
-        .catch(e => console.log('e', e));
-
-      return team;
     },
   },
   Mutation: {
@@ -71,6 +64,11 @@ const teamResolvers = {
         .then(d => d)
         .catch(e => console.log('error', e));
 
+      team.adminList = team.adminList.concat(userSession.id);
+      team.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
       await models.User.findByIdAndUpdate(
         userSession.id,
         { team: await userSession.team.concat(team.id) },
@@ -84,25 +82,26 @@ const teamResolvers = {
 
       return team;
     },
-    updateTeam: async (parent, { id, input }, { models }) => {
+    updateTeam: async (parent, { input }, { models, userSession, teamSession }) => {
+      if (!userSession || !teamSession) throw new Error('unauthorized');
+
+      const isUserAdmin = teamSession.adminList.indexOf(userSession.id);
+      if ((isUserAdmin <= -1) || userSession.invalidToken) throw new Error('unauthorized, not an admin');
+
       const { displayName: inputDisplayName } = input;
-
-      if (!(await models.Team.findById(id))) throw new Error('no such id in db');
-
       const takenProps = await models.Team.find({
-        $and: [{ displayName: inputDisplayName }, { $nor: [await models.Team.findById(id)] }],
+        $and: [{ displayName: inputDisplayName },
+          { $nor: [await models.Team.findById(teamSession.id)] }],
       });
 
       if (takenProps.length) throw new Error('display name is taken');
 
-      const checkError = (e) => {
-        if (e) throw new Error('cannot update team');
-      };
-
       const team = await models.Team.findByIdAndUpdate(
-        id,
+        teamSession.id,
         { $set: input },
-        e => checkError(e),
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
       )
         .then(d => d)
         .catch(e => console.log('e', e));
@@ -119,11 +118,24 @@ const teamResolvers = {
       return team;
     },
   },
-  // Team: {
-  //   user: (parent, args, { models }) => {
-  //     const user = parent.
-  //   }
-  // }
+  Team: {
+    memberList: (parent, args, { models }) => {
+      const memberList = [];
+      parent.memberList.forEach((e) => {
+        const user = models.User.findById(e);
+        memberList.push(user);
+      });
+      return memberList;
+    },
+    adminList: (parent, args, { models }) => {
+      const adminList = [];
+      parent.adminList.forEach((e) => {
+        const user = models.User.findById(e);
+        adminList.push(user);
+      });
+      return adminList;
+    },
+  },
 };
 
 export default teamResolvers;
