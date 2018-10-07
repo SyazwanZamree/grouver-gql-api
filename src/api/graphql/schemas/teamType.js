@@ -8,7 +8,7 @@ export default `
     teamLogOut: User
     teamSignIn(id: ID!): User
     createTeam(input: TeamInput): Team
-    updateTeam(id: ID!, input: UpdateTeamInput): Team
+    updateTeam(input: UpdateTeamInput): Team
     deleteTeam(id: ID!): Team
   }
 
@@ -39,9 +39,10 @@ export default `
     name: String
     description: String
     avatar: ID
-    memberList: [ID]
-    projectList: [ID]
+    adminList: [User]
+    memberList: [User]
+    projectList: [Project]
     createdAt: String
-    createdBy: ID
+    createdBy: User
   }
 `;
