@@ -83,10 +83,10 @@ const teamResolvers = {
       return team;
     },
     updateTeam: async (parent, { input }, { models, userSession, teamSession }) => {
-      if (!userSession || !teamSession) throw new Error('unauthorized');
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const isUserAdmin = teamSession.adminList.indexOf(userSession.id);
-      if ((isUserAdmin <= -1) || userSession.invalidToken) throw new Error('unauthorized, not an admin');
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
 
       const { displayName: inputDisplayName } = input;
       const takenProps = await models.Team.find({
@@ -108,10 +108,13 @@ const teamResolvers = {
 
       return team;
     },
-    deleteTeam: async (parent, { id }, { models }) => {
-      if (!(await models.Team.findById(id))) throw new Error('no such id in db');
+    deleteTeam: async (parent, args, { models, userSession, teamSession }) => {
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
 
-      const team = await models.Team.findByIdAndRemove(id)
+      const isUserAdmin = teamSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const team = await models.Team.findByIdAndRemove(teamSession.id)
         .then(d => d)
         .catch(e => console.log('e', e));
 

@@ -9,7 +9,7 @@ export default `
     teamSignIn(id: ID!): User
     createTeam(input: TeamInput): Team
     updateTeam(input: UpdateTeamInput): Team
-    deleteTeam(id: ID!): Team
+    deleteTeam: Team
   }
 
   input TeamInput {
