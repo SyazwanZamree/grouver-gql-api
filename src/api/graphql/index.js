@@ -6,6 +6,10 @@ import typeDefs from './schemas/index';
 import models from './../database/models/index';
 
 async function context(d) {
+  const {
+    authorization,
+  } = d.request.headers;
+
   const getUserSession = async (x) => {
     if (x !== undefined) {
       const valid = jwt.verify(x, 'secretTest', (err, result) => {
@@ -25,11 +29,19 @@ async function context(d) {
     return null;
   };
 
-  const {
-    authorization,
-  } = d.request.headers;
   const token = await authorization ? authorization.split('Bearer ')[1] : undefined;
   const userSession = await getUserSession(token)
+    .then(u => u)
+    .catch(e => console.log('error: ', e));
+
+  const getTeamSession = async () => {
+    const team = await models.Team.findById(userSession.teamSession)
+      .then(t => t)
+      .catch(e => console.log('e: ', e));
+    return team;
+  };
+
+  const teamSession = await getTeamSession()
     .then(u => u)
     .catch(e => console.log('error: ', e));
 
@@ -37,7 +49,7 @@ async function context(d) {
     req: d.request,
     models,
     userSession,
-    teamSession: userSession.teamSession,
+    teamSession,
     projectSession: 'project',
     postSession: 'post',
   };
