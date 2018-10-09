@@ -108,6 +108,49 @@ const teamResolvers = {
 
       return team;
     },
+    addTeamsUser: async (parent, { id }, { models, userSession, teamSession }) => {
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const isUserAdmin = teamSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const user = await models.User.findById(id);
+      let update;
+
+      if (user.team.indexOf(teamSession.id) <= -1) {
+        update = { team: user.team.concat(teamSession.id) };
+      }
+
+      const updatedUser = await models.User.findByIdAndUpdate(
+        id,
+        update,
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return updatedUser;
+    },
+    removeTeamsUser: async (parent, { id }, { models, userSession, teamSession }) => {
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const isUserAdmin = teamSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const user = await models.User.findById(id);
+      const teamIndex = user.team.indexOf(teamSession.id);
+
+      if (teamIndex <= -1) throw new Error('user not in team');
+
+      user.team.splice(teamIndex, 1);
+      user.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      return user;
+    },
     deleteTeam: async (parent, args, { models, userSession, teamSession }) => {
       if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
 

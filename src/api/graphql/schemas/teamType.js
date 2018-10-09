@@ -9,6 +9,8 @@ export default `
     teamSignIn(id: ID!): User
     createTeam(input: TeamInput): Team
     updateTeam(input: UpdateTeamInput): Team
+    addTeamsUser(id: ID!): User
+    removeTeamsUser(id: ID!): User
     deleteTeam: Team
   }
 
