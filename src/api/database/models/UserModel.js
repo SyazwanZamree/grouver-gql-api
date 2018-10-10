@@ -30,6 +30,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Team',
   },
+  projectSession: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
+  },
   team: [{
     type: Schema.Types.ObjectId,
     ref: 'Team',
