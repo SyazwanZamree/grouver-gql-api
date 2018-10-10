@@ -45,12 +45,24 @@ async function context(d) {
     .then(u => u)
     .catch(e => console.log('error: ', e));
 
+  const getProjectSession = async () => {
+    const project = await models.Project.findById(userSession.projectSession)
+      .then(p => p)
+      .catch(e => console.log('error: ', e));
+    return project;
+  };
+
+  const projectSession = await getProjectSession()
+    .then(u => u)
+    .catch(e => console.log('error: ', e));
+
   return {
+    // todo: rename session to current. ie. currentUser, currentTeam, currentProject
     req: d.request,
     models,
     userSession,
     teamSession,
-    projectSession: 'project',
+    projectSession,
     postSession: 'post',
   };
 }
