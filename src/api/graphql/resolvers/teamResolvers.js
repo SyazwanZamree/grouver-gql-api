@@ -181,6 +181,14 @@ const teamResolvers = {
       });
       return adminList;
     },
+    projectList: (parent, args, { models }) => {
+      const projectList = [];
+      parent.projectList.forEach((e) => {
+        const project = models.Project.findById(e);
+        projectList.push(project);
+      });
+      return projectList;
+    },
   },
 };
 
