@@ -37,7 +37,9 @@ export default `
     name: String
     description: String
     avatar: ID
-    memberList: [ID]
+    team: Team
+    adminList: [User]
+    memberList: [User]
     taskList: [ID]
     createdAt: String
     createdBy: ID
