@@ -51,15 +51,31 @@ const projectResolvers = {
 
       return user;
     },
-    // addProjectToUser: async (parent, { id }, {
-    //  models,
-    //  userSession,
-    //  teamSession,
-    //  projectSession
-    // }) => {
-    //
-    //   return user;
-    // },
+    addProjectToUser: async (parent, { id }, { models, userSession, projectSession }) => {
+      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const isUserAdmin = projectSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const user = await models.User.findById(id);
+      let update;
+
+      if (user.projects.indexOf(projectSession.id) <= -1) {
+        update = { projects: user.projects.concat(projectSession.id) };
+      }
+
+      const updatedUser = await models.User.findByIdAndUpdate(
+        id,
+        update,
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return updatedUser;
+    },
     // removeProjectFromUser: async (parent, { id }, {\
     //  models,
     //  userSession,
