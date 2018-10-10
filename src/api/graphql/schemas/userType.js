@@ -74,6 +74,7 @@ export default `
     password: String
     invalidToken: Boolean
     teamSession: Team
+    projectSession: Project
     avatar: Avatar
     team: [Team]
     projects: [Project]
