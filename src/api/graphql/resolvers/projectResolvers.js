@@ -13,6 +13,62 @@ const projectResolvers = {
     },
   },
   Mutation: {
+    projectLogin: async (parent, { id }, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+      if (userSession.projects.indexOf(id) <= -1) throw new Error('unauthorized: not users project');
+
+      const project = await models.Project.findById(id)
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { projectSession: project.id },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return user;
+    },
+    projectLogout: async (parent, args, { models, userSession, projectSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+      if (!projectSession) throw new Error('no project logged in');
+
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { projectSession: null },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return user;
+    },
+    // addProjectToUser: async (parent, { id }, {
+    //  models,
+    //  userSession,
+    //  teamSession,
+    //  projectSession
+    // }) => {
+    //
+    //   return user;
+    // },
+    // removeProjectFromUser: async (parent, { id }, {\
+    //  models,
+    //  userSession,
+    //  teamSession,
+    //  projectSession
+    // }) => {
+    //
+    //   return user;
+    // },
     createProject: async (parent, { input }, { models, userSession, teamSession }) => {
       if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
 
@@ -33,8 +89,20 @@ const projectResolvers = {
         .catch(e => console.log('e: ', e));
 
       await models.Team.findByIdAndUpdate(
-        teamSession,
+        teamSession.id,
         { projectList: await teamSession.projectList.concat(project.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+
+      await models.User.findByIdAndUpdate(
+        userSession.id,
+        { projects: await userSession.projects.concat(project.id) },
         { new: true },
         (e) => {
           if (e) throw new Error('cannot update team');

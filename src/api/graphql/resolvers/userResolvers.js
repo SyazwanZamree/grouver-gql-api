@@ -258,6 +258,10 @@ const userResolvers = {
       });
       return userTeams;
     },
+    projectSession: (parent, arg, { models }) => {
+      const userProjectSession = models.Project.findById(parent.projectSession);
+      return userProjectSession;
+    },
     projects: (parent, arg, { models }) => {
       const userProjects = [];
       parent.projects.forEach((e) => {
