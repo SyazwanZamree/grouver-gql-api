@@ -5,6 +5,10 @@ export default `
   }
 
   type Mutation {
+    projectLogin(id: ID!): User
+    projectLogout: User
+    addProjectToUser(id: ID!): User
+    removeProjectFromUser(id: ID!): User
     createProject(input: ProjectInput): Project
     updateProject(id: ID!, input: UpdateProjectInput): Project
     deleteProject(id: ID!): Project
