@@ -1,21 +1,15 @@
 const projectResolvers = {
   Query: {
-    getProjects: async (parent, args, { models }) => {
-      const projects = await models.Project.find()
+    getProjects: async (parent, args, { models, userSession, teamSession }) => {
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const projects = await models.Project.find({
+        _id: { $in: teamSession.projectList },
+      })
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
       return projects;
-    },
-    getProject: async (parent, { id }, { models }) => {
-      console.log('parent project: ', parent);
-      if (!(await models.Project.findById(id))) throw new Error('no such id in db');
-
-      const project = await models.Project.findById(id)
-        .then(d => d)
-        .catch(e => console.log('e: ', e));
-
-      return project;
     },
   },
   Mutation: {
