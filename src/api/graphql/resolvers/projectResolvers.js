@@ -19,15 +19,35 @@ const projectResolvers = {
     },
   },
   Mutation: {
-    createProject: async (parent, { input }, { models }) => {
+    createProject: async (parent, { input }, { models, userSession, teamSession }) => {
+      if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
+
       const { displayName: inputDisplayName } = input;
 
       if ((await models.Project.find({ displayName: inputDisplayName })).length) throw new Error('taken displayName');
 
-      const project = new models.Project(input)
+      const project = await new models.Project(input)
         .save()
         .then(d => d)
         .catch(e => console.log('error', e));
+
+      project.team = teamSession.id;
+      project.adminList = project.adminList.concat(userSession.id);
+
+      project.save()
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      await models.Team.findByIdAndUpdate(
+        teamSession,
+        { projectList: await teamSession.projectList.concat(project.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
 
       return project;
     },
@@ -63,6 +83,20 @@ const projectResolvers = {
         .catch(e => console.log('e', e));
 
       return project;
+    },
+  },
+  Project: {
+    team: (parent, args, { models }) => {
+      const team = models.Team.findById(parent.team);
+      return team;
+    },
+    adminList: (parent, args, { models }) => {
+      const adminList = [];
+      parent.adminList.forEach((e) => {
+        const user = models.User.findById(e);
+        adminList.push(user);
+      });
+      return adminList;
     },
   },
 };
