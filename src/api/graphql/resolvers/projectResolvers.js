@@ -142,34 +142,39 @@ const projectResolvers = {
 
       return project;
     },
-    updateProject: async (parent, { id, input }, { models }) => {
-      if (!(await models.Project.findById(id))) throw new Error('no such id in db');
+    updateProject: async (parent, { input }, { models, userSession, projectSession }) => {
+      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const isUserAdmin = projectSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
 
       const { displayName: inputDisplayName } = input;
       const takenProps = await models.Project.find({
-        $and: [{ displayName: inputDisplayName }, { $nor: [await models.Project.findById(id)] }],
+        $and: [{ displayName: inputDisplayName },
+          { $nor: [await models.Project.findById(projectSession.id)] }],
       });
 
       if (takenProps.length) throw new Error('display name is taken');
 
-      const checkError = (e) => {
-        if (e) throw new Error('cannot update team');
-      };
-
       const project = await models.Project.findByIdAndUpdate(
-        id,
+        projectSession.id,
         { $set: input },
-        e => checkError(e),
+        (e) => {
+          if (e) throw new Error('cannot update team');
+        },
       )
         .then(d => d)
         .catch(e => console.log('e', e));
 
       return project;
     },
-    deleteProject: async (parent, { id }, { models }) => {
-      if (!(await models.Project.findById(id))) throw new Error('no such id in db');
+    deleteProject: async (parent, args, { models, userSession, projectSession }) => {
+      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
 
-      const project = await models.Project.findByIdAndRemove(id)
+      const isUserAdmin = projectSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const project = await models.Project.findByIdAndRemove(projectSession.id)
         .then(d => d)
         .catch(e => console.log('e', e));
 
