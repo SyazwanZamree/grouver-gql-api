@@ -10,8 +10,8 @@ export default `
     addProjectToUser(id: ID!): User
     removeProjectFromUser(id: ID!): User
     createProject(input: ProjectInput): Project
-    updateProject(id: ID!, input: UpdateProjectInput): Project
-    deleteProject(id: ID!): Project
+    updateProject(input: UpdateProjectInput): Project
+    deleteProject: Project
   }
 
   input ProjectInput {
