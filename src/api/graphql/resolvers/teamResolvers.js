@@ -144,6 +144,10 @@ const teamResolvers = {
 
       if (teamIndex <= -1) throw new Error('user not in team');
 
+      if (JSON.stringify(teamSession.id) === JSON.stringify(user.teamSession)) {
+        user.teamSession = null;
+      }
+
       user.team.splice(teamIndex, 1);
       user.save()
         .then(d => d)
