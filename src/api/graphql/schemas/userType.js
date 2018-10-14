@@ -1,7 +1,6 @@
 export default `
   type Query {
-    getUsers: [User]
-    getUser(id: ID!): User
+    getUser: User
   }
 
   type Mutation {
@@ -16,9 +15,8 @@ export default `
       username: String
       password: String!
     ): String
-    createUser(input: UserInput): User
+    userLogout: User
     updateUser(
-      id: ID!,
       input: UpdateUserInput,
       projects: [UserProjectInput]
       tasksCreated: [UserTaskInput]
@@ -74,9 +72,11 @@ export default `
     name: String
     email: String
     password: String
-    token: String
+    invalidToken: Boolean
+    teamSession: Team
+    projectSession: Project
     avatar: Avatar
-    team: Team
+    team: [Team]
     projects: [Project]
     tasksCreated: [Task]
     tasksAssigned: [Task]

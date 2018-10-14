@@ -3,16 +3,10 @@ import jwt from 'jsonwebtoken';
 
 const userResolvers = {
   Query: {
-    getUsers: async (parent, args, { models, user }) => {
-      if (!user) throw new Error('unauthorized');
-      const users = await models.User.find()
-        .then(d => d)
-        .catch(e => console.log('e', e));
-      return users;
-    },
-    getUser: async (parent, { id }, { models }) => {
-      if (!(await models.User.findById(id))) throw new Error('no such id in db');
-      const user = await models.User.findById(id)
+    getUser: async (paret, args, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const user = await models.User.findById(userSession.id)
         .then(d => d)
         .catch(e => console.log('e', e));
 
@@ -27,18 +21,18 @@ const userResolvers = {
       password,
     }, { models }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const takenUsername = await models.User.findOne({ username });
-      const takenEmail = await models.User.findOne({ email });
+      const usernameIsTaken = await models.User.findOne({ username });
+      const emailIsTaken = await models.User.findOne({ email });
 
-      if (takenUsername && takenEmail) {
+      if (usernameIsTaken && emailIsTaken) {
         throw new Error('user already signed up using this email');
-      } else if (takenUsername) {
+      } else if (usernameIsTaken) {
         throw new Error('username is taken');
-      } else if (takenEmail) {
+      } else if (emailIsTaken) {
         throw new Error('email address is already in the DB');
       }
 
-      const user = new models.User({
+      const user = await new models.User({
         username,
         name,
         email,
@@ -48,7 +42,7 @@ const userResolvers = {
         .then(d => d)
         .catch(e => console.log('error: ', e));
 
-      user.token = jwt.sign(
+      const token = jwt.sign(
         {
           id: user.id,
           username: user.username,
@@ -57,18 +51,27 @@ const userResolvers = {
         'secretTest',
       );
 
-      return user.token;
+      return token;
     },
     userLogin: async (parent, { username, email, password }, { models }) => {
       const user = username
         ? await models.User.findOne({ username })
         : await models.User.findOne({ email });
 
-      const valid = await bcrypt.compare(password, user.password);
+      if (user === null) throw new Error('no user');
+      if (!(await bcrypt.compare(password, user.password))) throw new Error('wrong password');
 
-      if (!valid) throw new Error('not authorized');
+      await models.User.findByIdAndUpdate(
+        user.id,
+        { invalidToken: false },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
 
-      user.token = jwt.sign(
+      const token = jwt.sign(
         {
           id: user.id,
           username: user.username,
@@ -77,80 +80,62 @@ const userResolvers = {
         'secretTest',
       );
 
-      user.save()
-        .then(d => d)
-        .catch(e => console.log('error: ', e));
-
-      return user.token;
+      return token;
     },
-    createUser: async (parent, { input }, { models }) => {
-      const {
-        username: inputUsername,
-        email: inputEmail,
-      } = input;
+    userLogout: async (parent, args, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
-      const takenUsername = await models.User.findOne({ username: inputUsername });
-      const takenEmail = await models.User.findOne({ email: inputEmail });
-
-      if (takenUsername && takenEmail) {
-        throw new Error('user already signed up using this email');
-      } else if (takenUsername) {
-        throw new Error('display name is taken');
-      } else if (takenEmail) {
-        throw new Error('email address is already in the DB');
-      }
-
-      const user = new models.User(input)
-        .save()
+      const user = await models.User.findByIdAndUpdate(
+        userSession.id,
+        { invalidToken: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
         .then(d => d)
-        .catch(e => console.log('error: ', e));
+        .catch(e => console.log('e: ', e));
 
       return user;
     },
     updateUser: async (parent, {
-      id,
       input,
       projects,
-      tasksCreated,
       tasksAssigned,
+      tasksCreated,
       discussions,
       comments,
       replies,
-    }, { models }) => {
-      const user = await models.User.findById(id);
+    }, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
+
       const userProjects = [];
       const userCreatedTasks = [];
       const userAssignedTasks = [];
       const userDiscussions = [];
       const userComments = [];
       const userReplies = [];
+      const user = await models.User.findById(userSession.id);
+      const newUsername = input.username ? input.username : user.username;
+      const newEmail = input.email ? input.email : user.email;
+      const newName = input.name ? input.name : user.name;
+      const newPassword = (input.password && !(await bcrypt.compare(input.password, user.password)))
+        ? await bcrypt.hash(input.password, 10)
+        : user.password;
 
       if (!user) throw new Error('no such id in db');
-      // general user update via input
-      if (input) {
-        const {
-          username: inputUsername,
-          email: inputEmail,
-        } = input;
 
-        const takenProps = await models.User.find({
+      if (input) {
+        const propsIsTaken = await models.User.find({
           $and: [{
             $or: [
-              { username: inputUsername },
-              { email: inputEmail },
+              { username: newUsername },
+              { email: newEmail },
             ],
           },
-          {
-            $nor: [user],
-          }],
+          { $nor: [user] }],
         });
-
-        if (takenProps.length) throw new Error('email/display name is taken');
+        if (propsIsTaken.length) throw new Error('email/display name is taken');
       }
-
-      const checkError = (e) => {
-        if (e) throw new Error('cannot update user');
-      };
 
       // users projects update
       if (projects) {
@@ -209,14 +194,13 @@ const userResolvers = {
         });
       }
 
-      // user update
+      // user update. this does not works
       const userUpdate = {
-        username: (input || user).username,
-        name: (input || user).name,
-        email: (input || user).email,
-        password: (input || user).password,
+        username: newUsername,
+        name: newName,
+        email: newEmail,
+        password: newPassword,
         // avatar: (input || user).avatar,
-        // team: (input || user).team,
         // score: (input || user).score,
         projects: user.projects.concat(userProjects),
         tasksCreated: user.tasksCreated.concat(userCreatedTasks),
@@ -234,19 +218,21 @@ const userResolvers = {
       };
 
       const updatedUser = await models.User.findByIdAndUpdate(
-        id,
+        userSession.id,
         userUpdate,
-        e => checkError(e),
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
       )
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
       return updatedUser;
     },
-    deleteUser: async (parent, { id }, { models }) => {
-      if (!(await models.User.findById(id))) throw new Error('no such id in db');
+    deleteUser: async (parent, { models, userSession }) => {
+      if (!userSession || userSession.invalidToken) throw new Error('unauthorized');
 
-      const user = await models.User.findByIdAndRemove(id)
+      const user = await models.User.findByIdAndRemove(userSession.id)
         .then(d => d)
         .catch(e => console.log('e', e));
 
@@ -258,9 +244,24 @@ const userResolvers = {
     username: parent => parent.username,
     name: parent => parent.name,
     email: parent => parent.email,
-    password: parent => parent.password, // i dont think we can query even crypted password
+    password: parent => parent.password,
     avatar: parent => parent.avatar,
-    team: parent => parent.team,
+    teamSession: (parent, args, { models }) => {
+      const userTeamSession = models.Team.findById(parent.teamSession);
+      return userTeamSession;
+    },
+    team: (parent, arg, { models }) => {
+      const userTeams = [];
+      parent.team.forEach((e) => {
+        const team = models.Team.findById(e);
+        userTeams.push(team);
+      });
+      return userTeams;
+    },
+    projectSession: (parent, arg, { models }) => {
+      const userProjectSession = models.Project.findById(parent.projectSession);
+      return userProjectSession;
+    },
     projects: (parent, arg, { models }) => {
       const userProjects = [];
       parent.projects.forEach((e) => {

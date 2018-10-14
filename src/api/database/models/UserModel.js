@@ -23,17 +23,25 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  token: {
-    type: String,
+  invalidToken: {
+    type: Boolean,
   },
-  avatar: {
+  teamSession: {
     type: Schema.Types.ObjectId,
-    ref: 'Avatar',
+    ref: 'Team',
+  },
+  projectSession: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
   },
   team: [{
     type: Schema.Types.ObjectId,
     ref: 'Team',
   }],
+  avatar: {
+    type: Schema.Types.ObjectId,
+    ref: 'Avatar',
+  },
   projects: [{
     type: Schema.Types.ObjectId,
     ref: 'Project',

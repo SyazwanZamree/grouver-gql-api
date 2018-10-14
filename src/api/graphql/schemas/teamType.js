@@ -5,9 +5,13 @@ export default `
   }
 
   type Mutation {
+    teamLogOut: User
+    teamSignIn(id: ID!): User
     createTeam(input: TeamInput): Team
-    updateTeam(id: ID!, input: UpdateTeamInput): Team
-    deleteTeam(id: ID!): Team
+    updateTeam(input: UpdateTeamInput): Team
+    addTeamsUser(id: ID!): User
+    removeTeamsUser(id: ID!): User
+    deleteTeam: Team
   }
 
   input TeamInput {
@@ -37,9 +41,10 @@ export default `
     name: String
     description: String
     avatar: ID
-    memberList: [ID]
-    projectList: [ID]
+    adminList: [User]
+    memberList: [User]
+    projectList: [Project]
     createdAt: String
-    createdBy: ID
+    createdBy: User
   }
 `;

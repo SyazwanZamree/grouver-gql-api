@@ -21,6 +21,14 @@ const ProjectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Avatar',
   },
+  team: {
+    type: Schema.Types.ObjectId,
+    ref: 'Team',
+  },
+  adminList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
   memberList: [{
     type: Schema.Types.ObjectId,
     ref: 'User',

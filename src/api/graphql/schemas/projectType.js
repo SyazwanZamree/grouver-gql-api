@@ -5,9 +5,13 @@ export default `
   }
 
   type Mutation {
+    projectLogin(id: ID!): User
+    projectLogout: User
+    addProjectToUser(id: ID!): User
+    removeProjectFromUser(id: ID!): User
     createProject(input: ProjectInput): Project
-    updateProject(id: ID!, input: UpdateProjectInput): Project
-    deleteProject(id: ID!): Project
+    updateProject(input: UpdateProjectInput): Project
+    deleteProject: Project
   }
 
   input ProjectInput {
@@ -37,7 +41,9 @@ export default `
     name: String
     description: String
     avatar: ID
-    memberList: [ID]
+    team: Team
+    adminList: [User]
+    memberList: [User]
     taskList: [ID]
     createdAt: String
     createdBy: ID
