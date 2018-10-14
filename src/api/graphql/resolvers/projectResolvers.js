@@ -76,15 +76,28 @@ const projectResolvers = {
 
       return updatedUser;
     },
-    // removeProjectFromUser: async (parent, { id }, {\
-    //  models,
-    //  userSession,
-    //  teamSession,
-    //  projectSession
-    // }) => {
-    //
-    //   return user;
-    // },
+    removeProjectFromUser: async (parent, { id }, { models, userSession, projectSession }) => {
+      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const isUserAdmin = projectSession.adminList.indexOf(userSession.id);
+      if (isUserAdmin <= -1) throw new Error('unauthorized, not an admin');
+
+      const user = await models.User.findById(id);
+      const projectIndex = user.projects.indexOf(projectSession.id);
+
+      if (projectIndex <= -1) throw new Error('user not in project');
+
+      if (JSON.stringify(projectSession.id) === JSON.stringify(user.projectSession)) {
+        user.projectSession = null;
+      }
+
+      user.projects.splice(projectIndex, 1);
+      user.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      return user;
+    },
     createProject: async (parent, { input }, { models, userSession, teamSession }) => {
       if (!teamSession || userSession.invalidToken) throw new Error('unauthorized');
 
@@ -164,6 +177,7 @@ const projectResolvers = {
     },
   },
   Project: {
+    id: parent => parent.id,
     team: (parent, args, { models }) => {
       const team = models.Team.findById(parent.team);
       return team;
