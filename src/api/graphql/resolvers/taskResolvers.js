@@ -1,23 +1,4 @@
 const taskResolvers = {
-  Query: {
-    getTasks: async (parent, args, { models, req }) => {
-      console.log('>>>>>: ', req.session);
-      const tasks = await models.Task.find()
-        .then(d => d)
-        .catch(e => console.log('e: ', e));
-
-      return tasks;
-    },
-    getTask: async (parent, { id }, { models }) => {
-      if (!(await models.Task.findById(id))) throw new Error('no such id in db');
-
-      const task = await models.Task.findById(id)
-        .then(d => d)
-        .catch(e => console.log('e: ', e));
-
-      return task;
-    },
-  },
   Mutation: {
     createTask: async (parent, { input }, { models }) => {
       const task = new models.Task(input)
@@ -44,7 +25,7 @@ const taskResolvers = {
 
       return task;
     },
-    deleteTask: async (parent, { id }, { models }) => {
+    removeTask: async (parent, { id }, { models }) => {
       if (!(await models.Task.findById(id))) throw new Error('no such id in db');
 
       const task = await models.Task.findByIdAndRemove(id)

@@ -5,6 +5,7 @@ import commentResolvers from './commentResolvers';
 import discussionResolvers from './discussionResolvers';
 // import levelResolvers from './levelResolvers';
 import notificationResolvers from './notificationResolvers';
+import postResolvers from './postResolvers';
 import projectResolvers from './projectResolvers';
 import replyResolvers from './replyResolvers';
 import scoreResolvers from './scoreResolvers';
@@ -21,6 +22,7 @@ const resolversArray = [
   discussionResolvers,
   // levelResolvers,
   notificationResolvers,
+  postResolvers,
   projectResolvers,
   replyResolvers,
   scoreResolvers,

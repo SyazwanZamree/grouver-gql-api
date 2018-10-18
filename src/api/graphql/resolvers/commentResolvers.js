@@ -1,31 +1,13 @@
-class Comment {
-  constructor({
-    body,
-    createdAt,
-    createdBy,
-    upvote,
-    replies,
-  }) {
-    this.body = body;
-    this.createdAt = createdAt;
-    this.createdBy = createdBy;
-    this.upvote = upvote;
-    this.replies = replies;
-  }
-}
-
 const commentResolvers = {
-  Query: {
-    getComments: (parent) => {
-      console.log('parent', parent);
-      return parent;
-    },
-  },
   Mutation: {
-    addComment: (parent, { input }, { models }) => {
-      const newComment = new Comment(input);
-      console.log('>> models', models);
-      return newComment;
+    createComment: (parent, { input }) => {
+      console.log('input: ', input);
+    },
+    updateComment: (parent, { input }) => {
+      console.log('input: ', input);
+    },
+    removeComment: (parent, { input }) => {
+      console.log('input: ', input);
     },
   },
 };

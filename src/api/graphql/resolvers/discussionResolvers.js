@@ -1,30 +1,13 @@
-class Discussion {
-  constructor({
-    body,
-    createdAt,
-    createdBy,
-    upvote,
-    replies,
-  }) {
-    this.body = body;
-    this.createdAt = createdAt;
-    this.createdBy = createdBy;
-    this.upvote = upvote;
-    this.replies = replies;
-  }
-}
-
 const discussionResolvers = {
-  Query: {
-    getDiscussions: (parent) => {
-      console.log('parent', parent);
-      return parent;
-    },
-  },
   Mutation: {
-    addDiscussion: (parent, { input }) => {
-      const newDiscussion = new Discussion(input);
-      return newDiscussion;
+    createDiscussion: (parent, { input }) => {
+      console.log('input: ', input);
+    },
+    updateDiscussion: (parent, { input }) => {
+      console.log('input: ', input);
+    },
+    removeDiscussion: (parent, { input }) => {
+      console.log('input: ', input);
     },
   },
 };
