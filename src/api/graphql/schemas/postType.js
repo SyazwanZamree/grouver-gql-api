@@ -1,10 +1,10 @@
 export default `
   interface Post {
     id: ID!
-    body: String
-    postType: String
     createdAt: String
     createdBy: User
+    postType: String
+    body: String
   }
 
   type Query {
@@ -18,7 +18,7 @@ export default `
     createComment(input: CommentInput): Comment
     createReply(input: ReplyInput): Reply
 
-    updateTask(input: UpdateTaskInput): Task
+    updateTask(id: ID!, input: UpdateTaskInput): Task
     updateDiscussion(input: UpdateDiscussionInput): Discussion
     updateComment(input: UpdateCommentInput): Comment
     updateReply(input: UpdateReplyInput): Reply
@@ -34,15 +34,20 @@ export default `
     createdAt: String
     createdBy: User
     postType: String
-    title: String
     body: String
+
+    title: String
+    project: Project
     tags: [ID]
-    status: ID
     applause: Int
-    assignedTo: [User]
-    level: ID
-    dueDate: String
+
+    status: ID
+
     comments: [Comment]
+
+    assignedTo: [User]
+    level: Int
+    dueDate: String
   }
 
   type Discussion implements Post {
@@ -50,13 +55,18 @@ export default `
     createdAt: String
     createdBy: User
     postType: String
-    title: String
     body: String
+
+    title: String
+    project: Project
     tags: [ID]
-    status: ID
-    follower: [User]
     applause: Int
+
+    status: ID
+
     comments: [Comment]
+
+    follower: [User]
   }
 
   type Comment implements Post {
@@ -64,10 +74,13 @@ export default `
     createdAt: String
     createdBy: User
     postType: String
-    parentPost: Post
     body: String
+
     status: ID
+
     applause: Int
+
+    parentPost: Post
     reply: [Reply]
   }
 
@@ -76,13 +89,16 @@ export default `
     createdAt: String
     createdBy: User
     postType: String
-    parentComment: Comment
     body: String
+
     applause: Int
+
+    parentComment: Comment
   }
 
   input TaskInput {
-    body: String!
+    title: String
+    body: String
   }
 
   input DiscussionInput {
@@ -98,6 +114,7 @@ export default `
   }
 
   input UpdateTaskInput {
+    title: String
     body: String!
   }
 
