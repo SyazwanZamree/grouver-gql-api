@@ -1,14 +1,44 @@
+function checkUserAuthentication(userSession, projectSession) {
+  if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+  console.log('authenticated');
+}
+
+function checkUserAuthorization(userSession, projectSession, task) {
+  const usersProjectSession = JSON.stringify(userSession.projectSession);
+  const projectSessionId = JSON.stringify(projectSession.id);
+  const taskProject = JSON.stringify(task.project);
+  const isUserAuthorized = (usersProjectSession === projectSessionId)
+    && (usersProjectSession === taskProject);
+
+  if (isUserAuthorized === false && !userSession.invalidToken) throw new Error('unauthorized, not sign in');
+  console.log('signed in, authorized');
+}
+
+function checkPostCreator(userSession, task) {
+  const isUserCreator = JSON.stringify(userSession.id) === JSON.stringify(task.createdBy);
+  if (isUserCreator === false) throw new Error('user is not post creator');
+  console.log('user is post creator, authorized');
+}
+
 const taskResolvers = {
   Mutation: {
     createTask: async (parent, { input }, { models, userSession, projectSession }) => {
-      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+      checkUserAuthentication(userSession, projectSession);
 
       const task = await new models.Post(input)
         .save()
         .then(d => d)
         .catch(e => console.log('error', e));
 
-      const project = await models.Project.findByIdAndUpdate(
+      task.createdBy = userSession.id;
+      task.project = projectSession.id;
+      task.applause = 0;
+      task.postType = 'TASK';
+      task.save()
+        .then(d => d)
+        .catch(e => console.log('error: ', e));
+
+      await models.Project.findByIdAndUpdate(
         projectSession.id,
         { postList: await projectSession.postList.concat(task.id) },
         { new: true },
@@ -19,28 +49,13 @@ const taskResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
-      console.log('project: ', project);
-
-      task.createdBy = userSession.id;
-      task.project = projectSession.id;
-
-      task.save()
-        .then(d => d)
-        .catch(e => console.log('error: ', e));
-
       return task;
     },
     updateTask: async (parent, { id, input }, { models, userSession, projectSession }) => {
-      const usersProjectSession = JSON.stringify(userSession.projectSession);
-      const projectSessionId = JSON.stringify(projectSession.id);
       const task = await models.Post.findById(id);
-      const taskProject = JSON.stringify(task.project);
-      const isUserAuthorized = (usersProjectSession === projectSessionId)
-        && (usersProjectSession === taskProject);
-      const isUserCreator = JSON.stringify(userSession.id) === JSON.stringify(task.createdBy);
 
-      if (isUserAuthorized === false && !userSession.invalidToken) throw new Error('unauthorized, not sign in');
-      if (isUserCreator === false) throw new Error('user is not post creator');
+      checkUserAuthorization(userSession, projectSession, task);
+      checkPostCreator(userSession, task);
 
       const updatedTask = await models.Post.findByIdAndUpdate(
         id,
@@ -54,17 +69,29 @@ const taskResolvers = {
 
       return updatedTask;
     },
+    assignTaskDueDate: async () => {
+      console.log('assignTaskDueDate');
+    },
+    markTaskStatus: async () => {
+      console.log('markTaskStatus');
+    },
+    updateTaskLevel: async () => {
+      console.log('updateTaskLevel');
+    },
+    addTaskTag: async () => {
+      console.log('addTaskTag');
+    },
+    assignTaskToUsers: async () => {
+      console.log('assignTaskToUsers');
+    },
+    addCommentToTask: async () => {
+      console.log('addCommentToTask');
+    },
     removeTask: async (parent, { id }, { models, userSession, projectSession }) => {
-      const usersProjectSession = JSON.stringify(userSession.projectSession);
-      const projectSessionId = JSON.stringify(projectSession.id);
       const task = await models.Post.findById(id);
-      const taskProject = JSON.stringify(task.project);
-      const isUserAuthorized = (usersProjectSession === projectSessionId)
-        && (usersProjectSession === taskProject);
-      const isUserCreator = JSON.stringify(userSession.id) === JSON.stringify(task.createdBy);
 
-      if (isUserAuthorized === false && !userSession.invalidToken) throw new Error('unauthorized, not sign in');
-      if (isUserCreator === false) throw new Error('user is not post creator');
+      checkUserAuthorization(userSession, projectSession, task);
+      checkPostCreator(userSession, task);
 
       const removedTask = await models.Post.findByIdAndRemove(id)
         .then(d => d)
@@ -81,6 +108,14 @@ const taskResolvers = {
     project: (parent, args, { models }) => {
       const project = models.Project.findById(parent.project);
       return project;
+    },
+    applaudedBy: (parent, args, { models }) => {
+      const users = [];
+      parent.applaudedBy.forEach((e) => {
+        const user = models.User.findById(e);
+        users.push(user);
+      });
+      return users;
     },
     comments: (parent, args, { models }) => {
       const comments = [];
