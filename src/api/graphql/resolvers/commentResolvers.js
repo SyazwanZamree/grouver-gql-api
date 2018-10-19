@@ -6,6 +6,12 @@ const commentResolvers = {
     updateComment: (parent, { input }) => {
       console.log('input: ', input);
     },
+    markCommentStatus: (parent, { input }) => {
+      console.log('input: ', input);
+    },
+    replyComment: (parent, { input }) => {
+      console.log('input: ', input);
+    },
     removeComment: (parent, { input }) => {
       console.log('input: ', input);
     },
