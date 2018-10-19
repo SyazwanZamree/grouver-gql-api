@@ -5,6 +5,8 @@ export default `
     createdBy: User
     postType: String
     body: String
+    applause: Int
+    applaudedBy: [User]
   }
 
   type Query {
@@ -13,14 +15,31 @@ export default `
   }
 
   type Mutation {
+    applausePost(id: ID!): Post
+
     createTask(input: TaskInput): Task
     createDiscussion(input: DiscussionInput): Discussion
     createComment(input: CommentInput): Comment
     createReply(input: ReplyInput): Reply
 
     updateTask(id: ID!, input: UpdateTaskInput): Task
+    assignTaskDueDate(id: ID!): Task
+    markTaskStatus(id: ID!): Task
+    updateTaskLevel(id: ID!): Task
+    addTaskTag(id: ID!): Task
+    assignTaskToUsers(id: ID!): User
+    addCommentToTask(id: ID!): Comment
+
     updateDiscussion(input: UpdateDiscussionInput): Discussion
+    addDiscussionTag(id: ID!): Discussion
+    markDiscussionStatus(id: ID!): Discussion
+    followDiscussion(id: ID!): User
+    addCommentToDiscussion(id: ID!): Comment
+
     updateComment(input: UpdateCommentInput): Comment
+    markCommentStatus(id: ID!): Comment
+    replyComment(id: ID!): Reply
+
     updateReply(input: UpdateReplyInput): Reply
 
     removeTask(id: ID!): Task
@@ -35,11 +54,12 @@ export default `
     createdBy: User
     postType: String
     body: String
+    applause: Int
+    applaudedBy: [User]
 
     title: String
     project: Project
     tags: [ID]
-    applause: Int
 
     status: ID
 
@@ -56,11 +76,12 @@ export default `
     createdBy: User
     postType: String
     body: String
+    applause: Int
+    applaudedBy: [User]
 
     title: String
     project: Project
     tags: [ID]
-    applause: Int
 
     status: ID
 
@@ -75,10 +96,10 @@ export default `
     createdBy: User
     postType: String
     body: String
+    applause: Int
+    applaudedBy: [User]
 
     status: ID
-
-    applause: Int
 
     parentPost: Post
     reply: [Reply]
@@ -90,8 +111,8 @@ export default `
     createdBy: User
     postType: String
     body: String
-
     applause: Int
+    applaudedBy: [User]
 
     parentComment: Comment
   }
