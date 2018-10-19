@@ -22,6 +22,13 @@ const PostSchema = new Schema({
     type: String,
     required: true,
   },
+  applause: {
+    type: Number,
+  },
+  applaudedBy: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
 
   // ----------------------------
   // shared between Task, Discussion, Comment and Reply
@@ -38,9 +45,6 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Tag',
   }],
-  applause: {
-    type: Number,
-  },
 
   // ----------------------------
   // shared between Task, Discussion and Comment
