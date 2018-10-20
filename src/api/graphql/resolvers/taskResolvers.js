@@ -103,8 +103,25 @@ const taskResolvers = {
 
       return updatedTask;
     },
-    updateTaskLevel: async () => {
-      console.log('updateTaskLevel');
+    assignTaskDifficultyLevel: async (parent,
+      { id, difficultyLevel },
+      { models, userSession, projectSession },
+    ) => {
+      const task = await models.Post.findById(id);
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, task);
+
+      const updatedTask = await models.Post.findByIdAndUpdate(
+        id,
+        { difficultyLevel },
+        (e) => {
+          if (e) throw new Error('cannot update task');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return updatedTask;
     },
     addTaskTag: async () => {
       console.log('addTaskTag');
