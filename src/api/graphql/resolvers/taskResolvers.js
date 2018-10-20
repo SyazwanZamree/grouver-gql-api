@@ -81,8 +81,56 @@ const taskResolvers = {
     addTaskTag: async () => {
       console.log('addTaskTag');
     },
-    assignTaskToUsers: async () => {
-      console.log('assignTaskToUsers');
+    assignTaskToUsers: async (parent,
+      { taskInput, userInput },
+      { models, userSession, projectSession },
+    ) => {
+      const task = await models.Post.findById(taskInput.id);
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, task);
+      const authUsers = [];
+      const newUsers = [];
+      const assignUsers = [];
+      const users = await models.User.find({
+        _id: { $in: userInput.id },
+      })
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      // maybe we can use filter here instead of creating and storing element into new arrays
+      users.forEach((e) => {
+        const isUserInProject = e.projects.indexOf(projectSession.id);
+        if (isUserInProject > -1) authUsers.push(e);
+      });
+
+      authUsers.forEach((e) => {
+        const isNewlyAssignedTask = e.tasksAssigned.indexOf(taskInput.id);
+        if (isNewlyAssignedTask <= -1) {
+          newUsers.push(e.id);
+          models.User.findByIdAndUpdate(
+            e.id,
+            { tasksAssigned: e.tasksAssigned.concat(taskInput.id) },
+            { new: true },
+            (er) => {
+              if (er) throw new Error('cannot update team');
+            },
+          )
+            .then(d => d)
+            .catch(er => console.log('e: ', er));
+        }
+      });
+
+      newUsers.forEach((e) => {
+        const isUserAssigned = task.assignedTo.indexOf(e);
+        if (isUserAssigned <= -1) assignUsers.push(e);
+      });
+
+      task.assignedTo = task.assignedTo.concat(assignUsers);
+      task.save()
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return task;
     },
     addCommentToTask: async () => {
       console.log('addCommentToTask');
