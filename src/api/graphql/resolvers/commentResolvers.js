@@ -16,6 +16,16 @@ const commentResolvers = {
       console.log('input: ', input);
     },
   },
+  Comment: {
+    createdBy: (parent, args, { models }) => {
+      const user = models.User.findById(parent.createdBy);
+      return user;
+    },
+    parentPost: (parent, args, { models }) => {
+      const post = models.Post.findById(parent.parentPost);
+      return post;
+    },
+  },
 };
 
 export default commentResolvers;
