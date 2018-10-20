@@ -1,4 +1,6 @@
 export default `
+  scalar DateTime
+
   interface Post {
     id: ID!
     createdAt: String
@@ -23,7 +25,7 @@ export default `
     createReply(input: ReplyInput): Reply
 
     updateTask(id: ID!, input: UpdateTaskInput): Task
-    assignTaskDueDate(id: ID!): Task
+    assignTaskDueDate(id: ID!, dueDate: DateTime): Task
     markTaskStatus(id: ID!): Task
     updateTaskLevel(id: ID!): Task
     addTaskTag(id: ID!): Task
@@ -67,7 +69,7 @@ export default `
 
     assignedTo: [User]
     level: Int
-    dueDate: String
+    dueDate: DateTime
   }
 
   type Discussion implements Post {
