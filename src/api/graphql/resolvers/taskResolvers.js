@@ -61,7 +61,7 @@ const taskResolvers = {
         id,
         { $set: input },
         (e) => {
-          if (e) throw new Error('cannot update team');
+          if (e) throw new Error('cannot update task');
         },
       )
         .then(d => d)
@@ -69,8 +69,22 @@ const taskResolvers = {
 
       return updatedTask;
     },
-    assignTaskDueDate: async () => {
-      console.log('assignTaskDueDate');
+    assignTaskDueDate: async (parent, { id, dueDate }, { models, userSession, projectSession }) => {
+      const task = await models.Post.findById(id);
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, task);
+
+      const updatedTask = await models.Post.findByIdAndUpdate(
+        id,
+        { dueDate },
+        (e) => {
+          if (e) throw new Error('cannot update task');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return updatedTask;
     },
     markTaskStatus: async () => {
       console.log('markTaskStatus');
@@ -97,7 +111,7 @@ const taskResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
-      // maybe we can use filter here instead of creating and storing element into new arrays
+      // TODO: maybe we can use filter here instead of creating and storing element into new arrays
       users.forEach((e) => {
         const isUserInProject = e.projects.indexOf(projectSession.id);
         if (isUserInProject > -1) authUsers.push(e);
