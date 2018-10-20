@@ -43,7 +43,7 @@ const taskResolvers = {
         { postList: await projectSession.postList.concat(task.id) },
         { new: true },
         (e) => {
-          if (e) throw new Error('cannot update user');
+          if (e) throw new Error('cannot update project');
         },
       )
         .then(d => d)
@@ -112,7 +112,7 @@ const taskResolvers = {
             { tasksAssigned: e.tasksAssigned.concat(taskInput.id) },
             { new: true },
             (er) => {
-              if (er) throw new Error('cannot update team');
+              if (er) throw new Error('cannot update user');
             },
           )
             .then(d => d)
@@ -132,8 +132,35 @@ const taskResolvers = {
 
       return task;
     },
-    addCommentToTask: async () => {
-      console.log('addCommentToTask');
+    addCommentToTask: async (parent, { id, input }, { models, userSession, projectSession }) => {
+      const task = await models.Post.findById(id);
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, task);
+
+      const comment = await new models.Post(input)
+        .save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      comment.createdBy = userSession.id;
+      comment.postType = 'COMMENT';
+      comment.parentPost = task.id;
+      comment.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      models.Post.findByIdAndUpdate(
+        task.id,
+        { comments: task.comments.concat(comment.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update post');
+        },
+      )
+        .then(d => d)
+        .catch(er => console.log('e: ', er));
+
+      return comment;
     },
     removeTask: async (parent, { id }, { models, userSession, projectSession }) => {
       const task = await models.Post.findById(id);
