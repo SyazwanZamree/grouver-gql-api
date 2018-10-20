@@ -1,3 +1,5 @@
+import { GraphQLScalarType } from 'graphql';
+
 function checkUserAuthorization(userSession, projectSession, post) {
   const usersProjectSession = JSON.stringify(userSession.projectSession);
   const projectSessionId = JSON.stringify(projectSession.id);
@@ -46,6 +48,13 @@ const postResolvers = {
       return post;
     },
   },
+  DateTime: new GraphQLScalarType({
+    name: 'DateTime',
+    description: ' date and time, represented as an ISO-8601 string',
+    serialize: value => value.toISOString(),
+    parseValue: value => new Date(value),
+    parseLiteral: ast => new Date(ast.value),
+  }),
   Post: {
     __resolveType: async (parent) => {
       if (parent.assignedTo) {
