@@ -1,6 +1,4 @@
 export default `
-  scalar DateTime
-
   interface Post {
     id: ID!
     createdAt: String
@@ -9,6 +7,22 @@ export default `
     body: String
     applause: Int
     applaudedBy: [User]
+  }
+
+  scalar DateTime
+
+  enum TaskStatus {
+    DONE
+    IN_PROGRESS
+  }
+
+  enum DiscussionStatus {
+    SOLVED
+  }
+
+  enum CommentStatus {
+    HELPFUL
+    SOLUTION
   }
 
   type Query {
@@ -26,7 +40,7 @@ export default `
 
     updateTask(id: ID!, input: UpdateTaskInput): Task
     assignTaskDueDate(id: ID!, dueDate: DateTime): Task
-    markTaskStatus(id: ID!): Task
+    markTaskStatus(id: ID!, status: TaskStatus!): Task
     updateTaskLevel(id: ID!): Task
     addTaskTag(id: ID!): Task
     assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
@@ -34,12 +48,12 @@ export default `
 
     updateDiscussion(input: UpdateDiscussionInput): Discussion
     addDiscussionTag(id: ID!): Discussion
-    markDiscussionStatus(id: ID!): Discussion
+    markDiscussionStatus(id: ID!, status: DiscussionStatus!): Discussion
     followDiscussion(id: ID!): User
     addCommentToDiscussion(id: ID!): Comment
 
     updateComment(input: UpdateCommentInput): Comment
-    markCommentStatus(id: ID!): Comment
+    markCommentStatus(id: ID!, status: CommentStatus!): Comment
     replyComment(id: ID!): Reply
 
     updateReply(input: UpdateReplyInput): Reply
@@ -63,7 +77,7 @@ export default `
     project: Project
     tags: [ID]
 
-    status: ID
+    status: TaskStatus
 
     comments: [Comment]
 
@@ -85,7 +99,7 @@ export default `
     project: Project
     tags: [ID]
 
-    status: ID
+    status: DiscussionStatus
 
     comments: [Comment]
 
@@ -101,7 +115,7 @@ export default `
     applause: Int
     applaudedBy: [User]
 
-    status: ID
+    status: CommentStatus
 
     parentPost: Post
     reply: [Reply]
