@@ -53,8 +53,7 @@ const PostSchema = new Schema({
   // shared between Task, Discussion and Comment
 
   status: {
-    type: Schema.Types.ObjectId,
-    ref: 'Status',
+    type: String,
   },
 
   // ----------------------------
@@ -64,9 +63,9 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
-  level: [{
-    type: Number,
-  }],
+  level: {
+    type: String,
+  },
   dueDate: {
     type: Date,
   },
