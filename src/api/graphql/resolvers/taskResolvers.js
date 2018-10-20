@@ -124,6 +124,8 @@ const taskResolvers = {
       return updatedTask;
     },
     addTaskTag: async () => {
+      // TODO: restructure how tagging should work. should it be a user generated
+      // string with id in db, or enum?
       console.log('addTaskTag');
     },
     assignTaskToUsers: async (parent,
