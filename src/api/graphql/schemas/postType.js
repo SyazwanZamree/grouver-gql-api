@@ -25,6 +25,14 @@ export default `
     SOLUTION
   }
 
+  enum TaskDifficultyLevel {
+    VERY_EASY
+    EASY
+    NORMAL
+    HARD
+    VERY_HARD
+  }
+
   type Query {
     getPosts: [Post]
     getPost(id: ID!): Post
@@ -41,7 +49,7 @@ export default `
     updateTask(id: ID!, input: UpdateTaskInput): Task
     assignTaskDueDate(id: ID!, dueDate: DateTime): Task
     markTaskStatus(id: ID!, status: TaskStatus!): Task
-    updateTaskLevel(id: ID!): Task
+    assignTaskDifficultyLevel(id: ID!, difficultyLevel: TaskDifficultyLevel!): Task
     addTaskTag(id: ID!): Task
     assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
     addCommentToTask(id: ID!, input: CommentInput): Comment
@@ -82,7 +90,7 @@ export default `
     comments: [Comment]
 
     assignedTo: [User]
-    level: Int
+    difficultyLevel: TaskDifficultyLevel
     dueDate: DateTime
   }
 
