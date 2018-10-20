@@ -31,12 +31,8 @@ const PostSchema = new Schema({
   }],
 
   // ----------------------------
-  // shared between Task, Discussion, Comment and Reply
+  // shared between Task and Discussion
 
-  title: {
-    type: String,
-    required: true,
-  },
   project: {
     type: Schema.Types.ObjectId,
     ref: 'Project',
@@ -44,6 +40,13 @@ const PostSchema = new Schema({
   tags: [{
     type: Schema.Types.ObjectId,
     ref: 'Tag',
+  }],
+  title: {
+    type: String,
+  },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment',
   }],
 
   // ----------------------------
@@ -53,14 +56,6 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Status',
   },
-
-  // ----------------------------
-  // shared between Task and Discussion
-
-  comments: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Comment',
-  }],
 
   // ----------------------------
   // specific to Task
