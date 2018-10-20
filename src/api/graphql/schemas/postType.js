@@ -28,7 +28,7 @@ export default `
     updateTaskLevel(id: ID!): Task
     addTaskTag(id: ID!): Task
     assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
-    addCommentToTask(id: ID!): Comment
+    addCommentToTask(id: ID!, input: CommentInput): Comment
 
     updateDiscussion(input: UpdateDiscussionInput): Discussion
     addDiscussionTag(id: ID!): Discussion
