@@ -27,7 +27,7 @@ export default `
     markTaskStatus(id: ID!): Task
     updateTaskLevel(id: ID!): Task
     addTaskTag(id: ID!): Task
-    assignTaskToUsers(id: ID!): User
+    assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
     addCommentToTask(id: ID!): Comment
 
     updateDiscussion(input: UpdateDiscussionInput): Discussion
@@ -120,6 +120,14 @@ export default `
   input TaskInput {
     title: String
     body: String
+  }
+
+  input taskInput {
+    id: ID!
+  }
+
+  input userInput {
+    id: [ID!]
   }
 
   input DiscussionInput {
