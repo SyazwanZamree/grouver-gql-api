@@ -22,6 +22,12 @@ const discussionResolvers = {
       console.log('input: ', input);
     },
   },
+  Discussion: {
+    createdBy: (parent, args, { models }) => {
+      const user = models.User.findById(parent.createdBy);
+      return user;
+    },
+  },
 };
 
 export default discussionResolvers;
