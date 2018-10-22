@@ -1,3 +1,8 @@
+// TODO: clean up typedef, i.e
+// 1. do not use template string
+// 2. comments
+// 3. categorize properly
+
 export default `
   interface Post {
     id: ID!
@@ -6,10 +11,18 @@ export default `
     postType: String
     body: String
     applause: Int
+    project: Project
     applaudedBy: [User]
   }
 
   scalar DateTime
+
+  enum PostType {
+    TASK
+    DISCUSSION
+    COMMENT
+    REPLY
+  }
 
   enum TaskStatus {
     DONE
@@ -40,6 +53,7 @@ export default `
 
   type Mutation {
     applausePost(id: ID!): Post
+    createPost(input: PostInput, postType: PostType!, parentId: ID): Post
 
     createTask(input: TaskInput): Task
     createDiscussion(input: DiscussionInput): Discussion
@@ -47,18 +61,20 @@ export default `
     createReply(input: ReplyInput): Reply
 
     updateTask(id: ID!, input: UpdateTaskInput): Task
-    assignTaskDueDate(id: ID!, dueDate: DateTime): Task
-    markTaskStatus(id: ID!, status: TaskStatus!): Task
-    assignTaskDifficultyLevel(id: ID!, difficultyLevel: TaskDifficultyLevel!): Task
     addTaskTag(id: ID!): Task
-    assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
+    markTaskStatus(id: ID!, status: TaskStatus!): Task
     addCommentToTask(id: ID!, input: CommentInput): Comment
+
+    assignTaskDueDate(id: ID!, dueDate: DateTime): Task
+    assignTaskDifficultyLevel(id: ID!, difficultyLevel: TaskDifficultyLevel!): Task
+    assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
 
     updateDiscussion(input: UpdateDiscussionInput): Discussion
     addDiscussionTag(id: ID!): Discussion
     markDiscussionStatus(id: ID!, status: DiscussionStatus!): Discussion
-    followDiscussion(id: ID!): User
     addCommentToDiscussion(id: ID!): Comment
+
+    followDiscussion(id: ID!): User
 
     updateComment(input: UpdateCommentInput): Comment
     markCommentStatus(id: ID!, status: CommentStatus!): Comment
@@ -79,10 +95,10 @@ export default `
     postType: String
     body: String
     applause: Int
+    project: Project
     applaudedBy: [User]
 
     title: String
-    project: Project
     tags: [ID]
 
     status: TaskStatus
@@ -101,10 +117,10 @@ export default `
     postType: String
     body: String
     applause: Int
+    project: Project
     applaudedBy: [User]
 
     title: String
-    project: Project
     tags: [ID]
 
     status: DiscussionStatus
@@ -121,6 +137,7 @@ export default `
     postType: String
     body: String
     applause: Int
+    project: Project
     applaudedBy: [User]
 
     status: CommentStatus
@@ -136,12 +153,18 @@ export default `
     postType: String
     body: String
     applause: Int
+    project: Project
     applaudedBy: [User]
 
-    parentComment: Comment
+    parentPost: Comment
   }
 
   input TaskInput {
+    title: String
+    body: String
+  }
+
+  input PostInput {
     title: String
     body: String
   }
