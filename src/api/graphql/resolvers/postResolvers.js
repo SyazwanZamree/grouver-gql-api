@@ -1,5 +1,9 @@
 import { GraphQLScalarType } from 'graphql';
 
+function checkUserAuthentication(userSession, projectSession) {
+  if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+  console.log('authenticated');
+}
 function checkUserAuthorization(userSession, projectSession, post) {
   const usersProjectSession = JSON.stringify(userSession.projectSession);
   const projectSessionId = JSON.stringify(projectSession.id);
@@ -31,6 +35,60 @@ const postResolvers = {
     },
   },
   Mutation: {
+    createPost: async (parent,
+      { input, postType, parentId },
+      { models, userSession, projectSession },
+    ) => {
+      checkUserAuthentication(userSession, projectSession);
+      const { title, body } = input;
+      const post = await new models.Post({ body });
+      const parentPost = parentId ? await models.Post.findById(parentId) : null;
+
+      post.postType = postType;
+      post.createdBy = userSession.id;
+      post.applause = 0;
+      post.project = projectSession.id;
+
+      switch (postType) {
+        case 'TASK':
+        case 'DISCUSSION':
+          if (parentId) throw new Error('Post doesnt need parent');
+          post.title = title;
+          break;
+        case 'COMMENT': {
+          if ((parentPost.postType !== 'TASK') && (parentPost.postType !== 'DISCUSSION')) {
+            throw new Error('parent is not a task or discussion');
+          }
+          post.parentPost = post.parentPost.concat(parentPost);
+          break;
+        }
+        case 'REPLY': {
+          if (!parentPost.reply) throw new Error('parent is not a comment');
+          post.parentPost = post.parentPost.concat(parentPost);
+          break;
+        }
+        default:
+          console.log('sorry, no type?');
+      }
+
+      post.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      await models.Project.findByIdAndUpdate(
+        projectSession.id,
+        { postList: await projectSession.postList.concat(post.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update project');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+
+      return post;
+    },
     applausePost: async (parent, { id }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
       checkUserAuthorization(userSession, projectSession, post);
@@ -57,22 +115,22 @@ const postResolvers = {
   }),
   Post: {
     __resolveType: async (parent) => {
-      if (parent.assignedTo) {
+      if (parent.postType === 'TASK') {
         console.log('task');
         return 'Task';
       }
 
-      if (parent.replies) {
+      if (parent.postType === 'DISCUSSION') {
         console.log('discussion');
         return 'Discussion';
       }
 
-      if (parent.parentPost) {
+      if (parent.postType === 'COMMENT') {
         console.log('comment');
         return 'Comment';
       }
 
-      if (parent.parentComment) {
+      if (parent.postType === 'REPLY') {
         console.log('reply');
         return 'Reply';
       }
