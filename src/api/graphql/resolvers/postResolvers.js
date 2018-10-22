@@ -15,6 +15,12 @@ function checkUserAuthorization(userSession, projectSession, post) {
   console.log('signed in, authorized');
 }
 
+function checkPostCreator(userSession, task) {
+  const isUserCreator = JSON.stringify(userSession.id) === JSON.stringify(task.createdBy);
+  if (isUserCreator === false) throw new Error('user is not post creator');
+  console.log('user is post creator, authorized');
+}
+
 const postResolvers = {
   Query: {
     getPosts: async (parent, args, { models, userSession, projectSession }) => {
@@ -68,7 +74,7 @@ const postResolvers = {
           break;
         }
         default:
-          console.log('sorry, no type?');
+          console.log('sorry, no type');
       }
 
       post.save()
@@ -89,6 +95,31 @@ const postResolvers = {
 
       return post;
     },
+    updatePost: async (parent, { id, input }, { models, userSession, projectSession }) => {
+      const post = await models.Post.findById(id);
+
+      checkUserAuthorization(userSession, projectSession, post);
+      checkPostCreator(userSession, post);
+
+      const { body } = input;
+      const updateInput = post.postType === ('TASK' || 'DISCUSSION') ? input : { body };
+
+      if (post.postType === ('COMMENT' || 'REPLY') && input.title) {
+        throw new Error('comment and reply cannot contain title');
+      }
+
+      const updatedPost = await models.Post.findByIdAndUpdate(
+        id,
+        { $set: updateInput },
+        (e) => {
+          if (e) throw new Error('cannot update task');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return updatedPost;
+    },
     applausePost: async (parent, { id }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
       checkUserAuthorization(userSession, projectSession, post);
@@ -104,6 +135,18 @@ const postResolvers = {
         .catch(e => console.log('e', e));
 
       return post;
+    },
+    removePost: async (parent, { id }, { models, userSession, projectSession }) => {
+      const post = await models.Post.findById(id);
+
+      checkUserAuthorization(userSession, projectSession, post);
+      checkPostCreator(userSession, post);
+
+      const removedPost = await models.Post.findByIdAndRemove(id)
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return removedPost;
     },
   },
   DateTime: new GraphQLScalarType({
