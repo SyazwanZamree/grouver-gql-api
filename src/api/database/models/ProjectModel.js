@@ -33,9 +33,9 @@ const ProjectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
-  taskList: [{
+  postList: [{
     type: Schema.Types.ObjectId,
-    ref: 'Task',
+    ref: 'Post',
   }],
   createdAt: {
     type: Date,

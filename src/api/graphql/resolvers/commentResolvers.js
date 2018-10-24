@@ -1,31 +1,90 @@
-class Comment {
-  constructor({
-    body,
-    createdAt,
-    createdBy,
-    upvote,
-    replies,
-  }) {
-    this.body = body;
-    this.createdAt = createdAt;
-    this.createdBy = createdBy;
-    this.upvote = upvote;
-    this.replies = replies;
-  }
-}
+import checkUserAuthentication from './utils/authentication';
+import { checkUserAuthorization } from './utils/authorization';
 
 const commentResolvers = {
-  Query: {
-    getComments: (parent) => {
-      console.log('parent', parent);
-      return parent;
+  Mutation: {
+    markCommentStatus: async (parent,
+      { id, status },
+      { models, userSession, projectSession },
+    ) => {
+      const comment = await models.Post.findById(id);
+      if (comment.postType !== 'COMMENT') throw new Error('Post is not of a comment type');
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, comment);
+
+      const updatedComment = await models.Post.findByIdAndUpdate(
+        id,
+        { status },
+        (e) => {
+          if (e) throw new Error('cannot update comment');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      return updatedComment;
+    },
+    replyComment: async (parent, { id, input }, { models, userSession, projectSession }) => {
+      const comment = await models.Post.findById(id);
+      if (comment.postType !== 'COMMENT') throw new Error('Post is not of a comment type');
+
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, comment);
+
+      const reply = await new models.Post(input)
+        .save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      reply.createdBy = userSession.id;
+      reply.postType = 'REPLY';
+      reply.parentPost = comment.id;
+      reply.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      models.Post.findByIdAndUpdate(
+        comment.id,
+        { replies: comment.replies.concat(reply.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update comment');
+        },
+      )
+        .then(d => d)
+        .catch(er => console.log('e: ', er));
+
+      return reply;
     },
   },
-  Mutation: {
-    addComment: (parent, { input }, { models }) => {
-      const newComment = new Comment(input);
-      console.log('>> models', models);
-      return newComment;
+  Comment: {
+    createdBy: (parent, args, { models }) => {
+      const user = models.User.findById(parent.createdBy);
+      return user;
+    },
+    project: (parent, args, { models }) => {
+      const project = models.Project.findById(parent.project);
+      return project;
+    },
+    parentPost: (parent, args, { models }) => {
+      const post = models.Post.findById(parent.parentPost);
+      return post;
+    },
+    applaudedBy: (parent, args, { models }) => {
+      const users = [];
+      parent.applaudedBy.forEach((e) => {
+        const user = models.User.findById(e);
+        users.push(user);
+      });
+      return users;
+    },
+    replies: (parent, args, { models }) => {
+      const replies = [];
+      parent.replies.forEach((e) => {
+        const reply = models.Post.findById(e);
+        replies.push(reply);
+      });
+      return replies;
     },
   },
 };

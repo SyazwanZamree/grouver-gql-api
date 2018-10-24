@@ -281,7 +281,7 @@ const userResolvers = {
     tasksAssigned: (parent, arg, { models }) => {
       const userAssignedTasks = [];
       parent.tasksAssigned.forEach((e) => {
-        const task = models.Task.findById(e);
+        const task = models.Post.findById(e);
         userAssignedTasks.push(task);
       });
       return userAssignedTasks;

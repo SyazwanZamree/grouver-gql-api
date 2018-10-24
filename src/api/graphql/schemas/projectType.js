@@ -21,7 +21,6 @@ export default `
     description: String
     avatar: ID
     memberList: [ID]
-    taskList: [ID]
     createdAt: String
     createdBy: ID
   }
@@ -44,7 +43,7 @@ export default `
     team: Team
     adminList: [User]
     memberList: [User]
-    taskList: [ID]
+    postList: [Post]
     createdAt: String
     createdBy: ID
   }
