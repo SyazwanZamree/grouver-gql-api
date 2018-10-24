@@ -5,7 +5,7 @@ export function checkUserAuthorization(userSession, projectSession, task) {
   const isUserAuthorized = (usersProjectSession === projectSessionId)
     && (usersProjectSession === taskProject);
 
-  if (isUserAuthorized === false && !userSession.invalidToken) throw new Error('unauthorized, not sign in');
+  if (!isUserAuthorized) throw new Error('unauthorized, not sign in');
   console.log('signed in, authorized');
 }
 
