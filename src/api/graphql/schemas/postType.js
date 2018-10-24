@@ -1,17 +1,32 @@
-// TODO: clean up typedef, i.e
-// 1. do not use template string
-// 2. comments
-// 3. categorize properly
+// TODO:
+// 1. addPostTag POST KIV
+//    - first create tag, give ID. if tag already created, use the one created earlier
+//    - then add tag.
+//    - also update tag with taggedPost in models, tag.taggedPost = post.id
+// 2. refactor code, especially the auth part. create utils.
+// 3. use object assign to update model ie post.postType = 'COMMENT', post.createdBy
+//    - use object to update
+//    - make it look pretier
+// 4. resolver flow, restructure it. ie.
+//    i) find post by id
+//    ii) authentication and authorization
+//    iii) create post/user etc.
+//    iv) update post
+//    v) update other related model i.e user, other post, project etc
+// 5. declare typeDef as a function instead of a string
 
 export default `
   interface Post {
     id: ID!
+
     createdAt: String
     createdBy: User
     postType: String
-    body: String
-    applause: Int
     project: Project
+
+    body: String
+
+    applause: Int
     applaudedBy: [User]
   }
 
@@ -52,116 +67,106 @@ export default `
   }
 
   type Mutation {
-    applausePost(id: ID!): Post
+    # general mutation
     createPost(input: PostInput, postType: PostType!, parentId: ID): Post
+    updatePost(id: ID!, input: UpdatePostInput): Post
+    applausePost(id: ID!): Post
+    addCommentToPost(id: ID!, input: PostInput): Comment
+    addPostTag(id: ID!): Post
+    removePost(id: ID!): Post
 
-    createTask(input: TaskInput): Task
-    createDiscussion(input: DiscussionInput): Discussion
-    createComment(input: CommentInput): Comment
-    createReply(input: ReplyInput): Reply
-
-    updateTask(id: ID!, input: UpdateTaskInput): Task
-    addTaskTag(id: ID!): Task
+    # task specific mutation
     markTaskStatus(id: ID!, status: TaskStatus!): Task
-    addCommentToTask(id: ID!, input: CommentInput): Comment
-
     assignTaskDueDate(id: ID!, dueDate: DateTime): Task
     assignTaskDifficultyLevel(id: ID!, difficultyLevel: TaskDifficultyLevel!): Task
-    assignTaskToUsers(taskInput: taskInput, userInput: userInput): Task
+    assignTaskToUsers(
+      taskIdInput: TaskIdInput,
+      userIdInput: UserIdInput
+    ): Task
 
-    updateDiscussion(input: UpdateDiscussionInput): Discussion
-    addDiscussionTag(id: ID!): Discussion
+    # discussion specific mutation
     markDiscussionStatus(id: ID!, status: DiscussionStatus!): Discussion
-    addCommentToDiscussion(id: ID!): Comment
+    followDiscussion(id: ID!): Discussion
 
-    followDiscussion(id: ID!): User
-
-    updateComment(input: UpdateCommentInput): Comment
+    # comment specific mutation
     markCommentStatus(id: ID!, status: CommentStatus!): Comment
-    replyComment(id: ID!): Reply
-
-    updateReply(input: UpdateReplyInput): Reply
-
-    removeTask(id: ID!): Task
-    removeDiscussion(id: ID!): Discussion
-    removeComment(id: ID!): Comment
-    removeReply(id: ID!): Reply
+    replyComment(id: ID!, input: PostInput): Reply
   }
 
   type Task implements Post {
     id: ID!
+
     createdAt: String
     createdBy: User
     postType: String
-    body: String
-    applause: Int
     project: Project
-    applaudedBy: [User]
 
     title: String
-    tags: [ID]
+    body: String
 
     status: TaskStatus
-
-    comments: [Comment]
-
-    assignedTo: [User]
     difficultyLevel: TaskDifficultyLevel
     dueDate: DateTime
+    assignedTo: [User]
+
+    applause: Int
+    applaudedBy: [User]
+    comments: [Comment]
+    tags: [ID]
   }
 
   type Discussion implements Post {
     id: ID!
+
     createdAt: String
     createdBy: User
     postType: String
-    body: String
-    applause: Int
     project: Project
-    applaudedBy: [User]
 
     title: String
-    tags: [ID]
+    body: String
 
     status: DiscussionStatus
+    followers: [User]
 
+    applause: Int
+    applaudedBy: [User]
     comments: [Comment]
-
-    follower: [User]
+    tags: [ID]
   }
 
   type Comment implements Post {
     id: ID!
+
     createdAt: String
     createdBy: User
     postType: String
-    body: String
-    applause: Int
     project: Project
-    applaudedBy: [User]
+
+    body: String
 
     status: CommentStatus
-
     parentPost: Post
-    reply: [Reply]
+
+    applause: Int
+    applaudedBy: [User]
+    replies: [Reply]
   }
 
   type Reply implements Post {
     id: ID!
+
     createdAt: String
     createdBy: User
     postType: String
-    body: String
-    applause: Int
     project: Project
-    applaudedBy: [User]
+
+    body: String
 
     parentPost: Comment
-  }
 
-  input TaskInput {
-    title: String
-    body: String
+    applause: Int
+    applaudedBy: [User]
   }
 
   input PostInput {
@@ -169,40 +174,16 @@ export default `
     body: String
   }
 
-  input taskInput {
-    id: ID!
-  }
-
-  input userInput {
-    id: [ID!]
-  }
-
-  input DiscussionInput {
-    body: String!
-  }
-
-  input CommentInput {
-    body: String!
-  }
-
-  input ReplyInput {
-    body: String!
-  }
-
-  input UpdateTaskInput {
+  input UpdatePostInput {
     title: String
     body: String!
   }
 
-  input UpdateDiscussionInput {
-    body: String!
+  input TaskIdInput {
+    id: ID!
   }
 
-  input UpdateCommentInput {
-    body: String!
-  }
-
-  input UpdateReplyInput {
-    body: String!
+  input UserIdInput {
+    id: [ID!]
   }
 `;
