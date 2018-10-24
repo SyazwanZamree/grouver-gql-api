@@ -1,25 +1,7 @@
 import { GraphQLScalarType } from 'graphql';
 
-function checkUserAuthentication(userSession, projectSession) {
-  if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
-  console.log('authenticated');
-}
-function checkUserAuthorization(userSession, projectSession, post) {
-  const usersProjectSession = JSON.stringify(userSession.projectSession);
-  const projectSessionId = JSON.stringify(projectSession.id);
-  const postProject = JSON.stringify(post.project);
-  const isUserAuthorized = (usersProjectSession === projectSessionId)
-    && (usersProjectSession === postProject);
-
-  if (isUserAuthorized === false && !userSession.invalidToken) throw new Error('unauthorized, not sign in');
-  console.log('signed in, authorized');
-}
-
-function checkPostCreator(userSession, task) {
-  const isUserCreator = JSON.stringify(userSession.id) === JSON.stringify(task.createdBy);
-  if (isUserCreator === false) throw new Error('user is not post creator');
-  console.log('user is post creator, authorized');
-}
+import checkUserAuthentication from './utils/authentication';
+import { checkUserAuthorization, checkPostCreator } from './utils/authorization';
 
 const postResolvers = {
   Query: {
@@ -92,12 +74,12 @@ const postResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
-
       return post;
     },
     updatePost: async (parent, { id, input }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
 
+      checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, post);
       checkPostCreator(userSession, post);
 
@@ -135,6 +117,41 @@ const postResolvers = {
         .catch(e => console.log('e', e));
 
       return post;
+    },
+    addCommentToPost: async (parent, { id, input }, { models, userSession, projectSession }) => {
+      const post = await models.Post.findById(id);
+      checkUserAuthentication(userSession, projectSession);
+      checkUserAuthorization(userSession, projectSession, post);
+
+      const comment = await new models.Post(input)
+        .save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      comment.createdBy = userSession.id;
+      comment.postType = 'COMMENT';
+      comment.parentPost = post.id;
+      comment.save()
+        .then(d => d)
+        .catch(e => console.log('error', e));
+
+      models.Post.findByIdAndUpdate(
+        post.id,
+        { comments: post.comments.concat(comment.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update post');
+        },
+      )
+        .then(d => d)
+        .catch(er => console.log('e: ', er));
+
+      return comment;
+    },
+    addPostTag: async () => {
+      // TODO: restructure how tagging should work. should it be a user generated
+      // string with id in db, or enum?
+      console.log('addPostTag');
     },
     removePost: async (parent, { id }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
