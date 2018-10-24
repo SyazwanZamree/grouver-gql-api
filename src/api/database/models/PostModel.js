@@ -73,7 +73,7 @@ const PostSchema = new Schema({
   // ----------------------------
   // specific to Discussion
 
-  follower: [{
+  followers: [{
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
@@ -85,7 +85,7 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Post',
   }],
-  reply: [{
+  replies: [{
     type: Schema.Types.ObjectId,
     ref: 'Post',
   }],
