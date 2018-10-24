@@ -1,13 +1,24 @@
 const replyResolvers = {
-  Mutation: {
-    createReply: (parent, { input }) => {
-      console.log('input: ', input);
+  Reply: {
+    createdBy: (parent, args, { models }) => {
+      const user = models.User.findById(parent.createdBy);
+      return user;
     },
-    updateReply: (parent, { input }) => {
-      console.log('input: ', input);
+    project: (parent, args, { models }) => {
+      const project = models.Project.findById(parent.project);
+      return project;
     },
-    removeReply: (parent, { input }) => {
-      console.log('input: ', input);
+    applaudedBy: (parent, args, { models }) => {
+      const users = [];
+      parent.applaudedBy.forEach((e) => {
+        const user = models.User.findById(e);
+        users.push(user);
+      });
+      return users;
+    },
+    parentPost: (parent, args, { models }) => {
+      const post = models.Post.findById(parent.parentPost);
+      return post;
     },
   },
 };
