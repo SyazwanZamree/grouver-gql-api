@@ -46,33 +46,22 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Project',
   }],
-  // Post schemas
-  tasksCreated: [{
+  postsCreated: [{
     type: Schema.Types.ObjectId,
-    ref: 'Task',
+    ref: 'Post',
   }],
-  tasksAssigned: [{
+  postsAssigned: [{
     type: Schema.Types.ObjectId,
-    ref: 'Task',
+    ref: 'Post',
   }],
-  discussionsCreated: [{
+  postFollowing: [{
     type: Schema.Types.ObjectId,
-    ref: 'Discussion',
+    ref: 'Post',
   }],
-  commentsCreated: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Comment',
-  }],
-  repliesCreated: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Reply',
-  }],
-  // --------end of post schemas----
   notifications: [{
     type: Schema.Types.ObjectId,
     ref: 'Notification',
   }],
-  // should be renamed to experience point and no ref involved
   scores: {
     type: Schema.Types.ObjectId,
     ref: 'Score',

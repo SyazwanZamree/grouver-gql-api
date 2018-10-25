@@ -69,11 +69,9 @@ export default `
     avatar: Avatar
     team: [Team]
     projects: [Project]
-    tasksCreated: [Task]
-    tasksAssigned: [Task]
-    discussionsCreated: [Discussion]
-    commentsCreated: [Comment]
-    repliesCreated: [Reply]
+    postsCreated: [Post]
+    postsAssigned: [Post]
+    postsFollowing: [Post]
     notifications: [Notification]
     scores: Score
     badges: [Badge]
