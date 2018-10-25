@@ -115,6 +115,7 @@ const postResolvers = {
     },
     applausePost: async (parent, { id }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
+
       checkUserAuthorization(userSession, projectSession, post);
 
       const applauderIndex = post.applaudedBy.indexOf(userSession.id);
@@ -131,6 +132,7 @@ const postResolvers = {
     },
     addCommentToPost: async (parent, { id, input }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
+
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, post);
 

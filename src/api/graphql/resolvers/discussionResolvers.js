@@ -9,6 +9,7 @@ const discussionResolvers = {
     ) => {
       const discussion = await models.Post.findById(id);
       if (discussion.postType !== 'DISCUSSION') throw new Error('Post is not of a discussion type');
+
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, discussion);
 
