@@ -169,6 +169,10 @@ const teamResolvers = {
     },
   },
   Team: {
+    createdBy: (parent, args, { models }) => {
+      const user = models.User.findById(parent.createdBy);
+      return user;
+    },
     memberList: (parent, args, { models }) => {
       const memberList = [];
       parent.memberList.forEach((e) => {
