@@ -9,6 +9,7 @@ const discussionResolvers = {
     ) => {
       const discussion = await models.Post.findById(id);
       if (discussion.postType !== 'DISCUSSION') throw new Error('Post is not of a discussion type');
+
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, discussion);
 
@@ -36,8 +37,20 @@ const discussionResolvers = {
       const updatedDiscussion = await models.Post.findByIdAndUpdate(
         id,
         { followers: discussion.followers.concat(userSession.id) },
+        { new: true },
         (e) => {
-          if (e) throw new Error('cannot update task');
+          if (e) throw new Error('cannot update discussion');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      await models.User.findByIdAndUpdate(
+        userSession.id,
+        { postsFollowing: userSession.postsFollowing.concat(id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
         },
       )
         .then(d => d)

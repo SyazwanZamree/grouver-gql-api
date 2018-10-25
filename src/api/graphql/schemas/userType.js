@@ -16,15 +16,7 @@ export default `
       password: String!
     ): String
     userLogout: User
-    updateUser(
-      input: UpdateUserInput,
-      projects: [UserProjectInput]
-      tasksCreated: [UserTaskInput]
-      tasksAssigned: [UserTaskInput]
-      discussionsCreated: [UserDiscussionInput]
-      commentsCreated: [UserCommentInput]
-      repliesCreated: [UserReplyInput]
-      ): User
+    updateUser(input: UpdateUserInput): User
     deleteUser(id: ID!): User
   }
 
@@ -71,18 +63,15 @@ export default `
     username: String
     name: String
     email: String
-    password: String
     invalidToken: Boolean
     teamSession: Team
     projectSession: Project
     avatar: Avatar
     team: [Team]
     projects: [Project]
-    tasksCreated: [Task]
-    tasksAssigned: [Task]
-    discussions: [Discussion]
-    comments: [Comment]
-    replies: [Reply]
+    postsCreated: [Post]
+    postsAssigned: [Post]
+    postsFollowing: [Post]
     notifications: [Notification]
     scores: Score
     badges: [Badge]

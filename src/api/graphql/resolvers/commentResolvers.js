@@ -9,6 +9,7 @@ const commentResolvers = {
     ) => {
       const comment = await models.Post.findById(id);
       if (comment.postType !== 'COMMENT') throw new Error('Post is not of a comment type');
+
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, comment);
 

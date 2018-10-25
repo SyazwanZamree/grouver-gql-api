@@ -19,8 +19,6 @@ export default `
     name: String!
     description: String
     avatar: ID
-    memberList: [ID]
-    projectList: [ID]
     createdAt: String
     createdBy: ID
   }

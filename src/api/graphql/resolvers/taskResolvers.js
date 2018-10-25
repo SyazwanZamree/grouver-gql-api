@@ -81,12 +81,12 @@ const taskResolvers = {
       });
 
       authUsers.forEach((e) => {
-        const isNewlyAssignedTask = e.tasksAssigned.indexOf(taskIdInput.id);
+        const isNewlyAssignedTask = e.postsAssigned.indexOf(taskIdInput.id);
         if (isNewlyAssignedTask <= -1) {
           newUsers.push(e.id);
           models.User.findByIdAndUpdate(
             e.id,
-            { tasksAssigned: e.tasksAssigned.concat(taskIdInput.id) },
+            { postsAssigned: e.postsAssigned.concat(taskIdInput.id) },
             { new: true },
             (er) => {
               if (er) throw new Error('cannot update user');
