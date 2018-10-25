@@ -74,6 +74,17 @@ const postResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
+      await models.User.findByIdAndUpdate(
+        userSession.id,
+        { postsCreated: await userSession.postsCreated.concat(post.id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update project');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
       return post;
     },
     updatePost: async (parent, { id, input }, { models, userSession, projectSession }) => {
