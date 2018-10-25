@@ -63,7 +63,6 @@ export default `
     username: String
     name: String
     email: String
-    password: String
     invalidToken: Boolean
     teamSession: Team
     projectSession: Project
