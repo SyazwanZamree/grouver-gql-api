@@ -46,6 +46,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Project',
   }],
+  // Post schemas
   tasksCreated: [{
     type: Schema.Types.ObjectId,
     ref: 'Task',
@@ -54,18 +55,19 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Task',
   }],
-  discussions: [{
+  discussionsCreated: [{
     type: Schema.Types.ObjectId,
     ref: 'Discussion',
   }],
-  comments: [{
+  commentsCreated: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment',
   }],
-  replies: [{
+  repliesCreated: [{
     type: Schema.Types.ObjectId,
     ref: 'Reply',
   }],
+  // --------end of post schemas----
   notifications: [{
     type: Schema.Types.ObjectId,
     ref: 'Notification',
