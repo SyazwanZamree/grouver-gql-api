@@ -16,13 +16,11 @@ export default `
 
   input ProjectInput {
     id: ID
-    displayName: String
-    name: String
+    name: String!
+    displayName: String!
     description: String
     avatar: ID
-    memberList: [ID]
     createdAt: String
-    createdBy: ID
   }
 
   input UpdateProjectInput {
