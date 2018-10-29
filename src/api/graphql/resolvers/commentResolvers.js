@@ -26,7 +26,7 @@ const commentResolvers = {
         .then(d => d)
         .catch(e => console.log('e', e));
 
-      const commentCreator = await models.User.findById(discussion.createdBy);
+      const commentCreator = await models.User.findById(comment.createdBy);
       let currentXp = commentCreator.experiencePoint;
 
       if (comment.status === 'SOLUTION') {
@@ -40,6 +40,18 @@ const commentResolvers = {
         // HELPFUL > SOLUTION +10
         xp = 10;
       }
+
+      await models.User.findByIdAndUpdate(
+        comment.createdBy,
+        { experiencePoint: currentXp += xp },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
 
       return updatedComment;
     },
