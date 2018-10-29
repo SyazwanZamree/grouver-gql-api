@@ -195,6 +195,14 @@ const projectResolvers = {
       });
       return adminList;
     },
+    postList: (parent, args, { models }) => {
+      const postList = [];
+      parent.postList.forEach((e) => {
+        const post = models.Post.findById(e);
+        postList.push(post);
+      });
+      return postList;
+    },
   },
 };
 
