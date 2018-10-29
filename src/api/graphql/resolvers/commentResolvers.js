@@ -8,7 +8,10 @@ const commentResolvers = {
       { models, userSession, projectSession },
     ) => {
       const comment = await models.Post.findById(id);
+      if (comment === comment.status) throw new Error('cannot reassign comment status');
       if (comment.postType !== 'COMMENT') throw new Error('Post is not of a comment type');
+
+      let xp;
 
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, comment);
@@ -22,6 +25,21 @@ const commentResolvers = {
       )
         .then(d => d)
         .catch(e => console.log('e', e));
+
+      const commentCreator = await models.User.findById(discussion.createdBy);
+      let currentXp = commentCreator.experiencePoint;
+
+      if (comment.status === 'SOLUTION') {
+        // SOLUTION > HELPFUL -5
+        xp = -5;
+      } else if (!comment.status) {
+        // null > SOLUTION +10
+        // null > HELPFUL +5
+        xp = status === 'SOLUTION' ? 15 : 5;
+      } else {
+        // HELPFUL > SOLUTION +10
+        xp = 10;
+      }
 
       return updatedComment;
     },
