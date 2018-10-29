@@ -74,12 +74,18 @@ const postResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
+      let getUserXp = userSession.experiencePoint;
+      const xp = postType === 'REPLY' ? 1 : 2;
+
       await models.User.findByIdAndUpdate(
         userSession.id,
-        { postsCreated: await userSession.postsCreated.concat(post.id) },
+        {
+          postsCreated: await userSession.postsCreated.concat(post.id),
+          experiencePoint: getUserXp += xp,
+        },
         { new: true },
         (e) => {
-          if (e) throw new Error('cannot update project');
+          if (e) throw new Error('cannot update user');
         },
       )
         .then(d => d)
