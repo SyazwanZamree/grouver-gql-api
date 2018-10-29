@@ -52,7 +52,6 @@ const commentResolvers = {
         .then(d => d)
         .catch(e => console.log('e', e));
 
-
       return updatedComment;
     },
     replyComment: async (parent, { id, input }, { models, userSession, projectSession }) => {
