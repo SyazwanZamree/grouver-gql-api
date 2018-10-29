@@ -56,6 +56,19 @@ const discussionResolvers = {
         .then(d => d)
         .catch(e => console.log('e', e));
 
+      let getUserXp = userSession.experiencePoint;
+
+      await models.User.findByIdAndUpdate(
+        discussion.createdBy,
+        { experiencePoint: getUserXp += 1 },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
       return updatedDiscussion;
     },
   },
