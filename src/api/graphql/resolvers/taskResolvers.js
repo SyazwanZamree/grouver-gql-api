@@ -26,6 +26,13 @@ const taskResolvers = {
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, task);
 
+      const xp = status === 'DONE' ? 15 : 5;
+      const assignedUsers = await models.User.find({
+        _id: { $in: task.assignedTo },
+      })
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
       const updatedTask = await models.Post.findByIdAndUpdate(
         id,
         { status },
@@ -35,6 +42,19 @@ const taskResolvers = {
       )
         .then(d => d)
         .catch(e => console.log('e', e));
+
+      await assignedUsers.forEach((user) => {
+        let currentXp = user.experiencePoint;
+        models.User.findByIdAndUpdate(
+          user.id,
+          { experiencePoint: currentXp += xp },
+          (e) => {
+            if (e) throw new Error('cannot update user point');
+          },
+        )
+          .then(d => d)
+          .catch(e => console.log('e', e));
+      });
 
       return updatedTask;
     },
