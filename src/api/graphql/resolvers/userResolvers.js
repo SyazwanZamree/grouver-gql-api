@@ -10,11 +10,6 @@ const userResolvers = {
         .then(d => d)
         .catch(e => console.log('e', e));
 
-      user.experiencePoint = 0;
-      user.save()
-        .then(d => d)
-        .catch(e => console.log('error: ', e));
-
       return user;
     },
   },
