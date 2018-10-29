@@ -8,6 +8,7 @@ const discussionResolvers = {
       { models, userSession, projectSession },
     ) => {
       const discussion = await models.Post.findById(id);
+      if (status === discussion.status) throw new Error('cannot reassign discussion status');
       if (discussion.postType !== 'DISCUSSION') throw new Error('Post is not of a discussion type');
 
       checkUserAuthentication(userSession, projectSession);
@@ -18,6 +19,20 @@ const discussionResolvers = {
         { status },
         (e) => {
           if (e) throw new Error('cannot update comment');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      const discussionCreator = await models.User.findById(discussion.createdBy);
+      let currentXp = discussionCreator.experiencePoint;
+
+      await models.User.findByIdAndUpdate(
+        discussion.createdBy,
+        { experiencePoint: currentXp += 2 },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
         },
       )
         .then(d => d)
@@ -48,6 +63,19 @@ const discussionResolvers = {
       await models.User.findByIdAndUpdate(
         userSession.id,
         { postsFollowing: userSession.postsFollowing.concat(id) },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      let getUserXp = userSession.experiencePoint;
+
+      await models.User.findByIdAndUpdate(
+        discussion.createdBy,
+        { experiencePoint: getUserXp += 1 },
         { new: true },
         (e) => {
           if (e) throw new Error('cannot update user');

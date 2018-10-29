@@ -73,7 +73,7 @@ export default `
     postsAssigned: [Post]
     postsFollowing: [Post]
     notifications: [Notification]
-    scores: Score
+    experiencePoint: Int
     badges: [Badge]
     createdAt: String
   }

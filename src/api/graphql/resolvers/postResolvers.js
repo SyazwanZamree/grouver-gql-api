@@ -74,12 +74,18 @@ const postResolvers = {
         .then(d => d)
         .catch(e => console.log('e: ', e));
 
+      let getUserXp = userSession.experiencePoint;
+      const xp = postType === 'REPLY' ? 1 : 2;
+
       await models.User.findByIdAndUpdate(
         userSession.id,
-        { postsCreated: await userSession.postsCreated.concat(post.id) },
+        {
+          postsCreated: await userSession.postsCreated.concat(post.id),
+          experiencePoint: getUserXp += xp,
+        },
         { new: true },
         (e) => {
-          if (e) throw new Error('cannot update project');
+          if (e) throw new Error('cannot update user');
         },
       )
         .then(d => d)
@@ -115,6 +121,9 @@ const postResolvers = {
     },
     applausePost: async (parent, { id }, { models, userSession, projectSession }) => {
       const post = await models.Post.findById(id);
+      const postCreator = await models.User.findById(post.createdBy);
+      const xp = post.postType === 'REPLY' ? 1 : 2;
+      let currentXp = postCreator.experiencePoint;
 
       checkUserAuthorization(userSession, projectSession, post);
 
@@ -125,6 +134,17 @@ const postResolvers = {
       post.applaudedBy = post.applaudedBy.concat(userSession.id);
 
       post.save()
+        .then(d => d)
+        .catch(e => console.log('e', e));
+
+      await models.User.findByIdAndUpdate(
+        post.createdBy,
+        { experiencePoint: currentXp += xp },
+        { new: true },
+        (e) => {
+          if (e) throw new Error('cannot update user');
+        },
+      )
         .then(d => d)
         .catch(e => console.log('e', e));
 

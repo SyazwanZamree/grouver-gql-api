@@ -37,6 +37,7 @@ const userResolvers = {
         name,
         email,
         password: hashedPassword,
+        experiencePoint: 0,
       })
         .save()
         .then(d => d)
@@ -200,14 +201,14 @@ const userResolvers = {
     },
     postsFollowing: (parent, arg, { models }) => {
       const userFollowingPosts = [];
-      parent.postFollowing.forEach((e) => {
+      parent.postsFollowing.forEach((e) => {
         const post = models.Post.findById(e);
         userFollowingPosts.push(post);
       });
       return userFollowingPosts;
     },
     notifications: parent => parent.notifications,
-    scores: parent => parent.scores,
+    experiencePoint: parent => parent.experiencePoint,
     badges: parent => parent.badges,
     createdAt: parent => parent.createdAt,
   },

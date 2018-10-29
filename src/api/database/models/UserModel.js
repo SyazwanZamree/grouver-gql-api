@@ -54,7 +54,7 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Post',
   }],
-  postFollowing: [{
+  postsFollowing: [{
     type: Schema.Types.ObjectId,
     ref: 'Post',
   }],
@@ -62,9 +62,8 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Notification',
   }],
-  scores: {
-    type: Schema.Types.ObjectId,
-    ref: 'Score',
+  experiencePoint: {
+    type: Number,
   },
   badges: [{
     type: Schema.Types.ObjectId,
