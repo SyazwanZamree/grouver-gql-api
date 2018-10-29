@@ -23,15 +23,11 @@ const taskResolvers = {
     },
     markTaskStatus: async (parent, { id, status }, { models, userSession, projectSession }) => {
       const task = await models.Post.findById(id);
+      if (status === task.status) throw new Error('cannot reassign');
       checkUserAuthentication(userSession, projectSession);
       checkUserAuthorization(userSession, projectSession, task);
 
-      const xp = status === 'DONE' ? 15 : 5;
-      const assignedUsers = await models.User.find({
-        _id: { $in: task.assignedTo },
-      })
-        .then(d => d)
-        .catch(e => console.log('e: ', e));
+      let xp;
 
       const updatedTask = await models.Post.findByIdAndUpdate(
         id,
@@ -42,6 +38,25 @@ const taskResolvers = {
       )
         .then(d => d)
         .catch(e => console.log('e', e));
+
+      const assignedUsers = await models.User.find({
+        _id: { $in: task.assignedTo },
+      })
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      // TODO: xp will be based on task difficultyLevel
+      if (task.status === 'DONE') {
+        // DONE > IN_PROGRESS -15
+        xp = -15;
+      } else if (!task.status) {
+        // null > DONE +15
+        // null > IN_PROGRESS +5
+        xp = status === 'DONE' ? 20 : 5;
+      } else {
+        // IN_PROGRESS > DONE +15
+        xp = 15;
+      }
 
       await assignedUsers.forEach((user) => {
         let currentXp = user.experiencePoint;
