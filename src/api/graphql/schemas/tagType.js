@@ -16,16 +16,4 @@ export default `
     createTag(body: String!, postIdInput: ID): Tag
     assignPostToTag(tagIdInput: ID! postIdInput: ID!): Tag
   }
-
-  input TagInput {
-    body: String
-  }
-
-  input PostIdInput {
-    id: ID
-  }
-
-  input TagIdInput {
-    id: ID
-  }
 `;
