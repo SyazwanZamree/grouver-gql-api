@@ -14,7 +14,7 @@ export default `
 
   type Mutation {
     createTag(body: String!, postIdInput: ID): Tag
-    assignPostToTag(tagIdInput: TagIdInput! postIdInput: PostIdInput!): Tag
+    assignPostToTag(tagIdInput: ID! postIdInput: ID!): Tag
   }
 
   input TagInput {
