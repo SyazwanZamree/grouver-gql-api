@@ -8,7 +8,7 @@ import postResolvers from './postResolvers';
 import projectResolvers from './projectResolvers';
 import replyResolvers from './replyResolvers';
 import scoreResolvers from './scoreResolvers';
-// import tagResolvers from './tagResolvers';
+import tagResolvers from './tagResolvers';
 import taskResolvers from './taskResolvers';
 import teamResolvers from './teamResolvers';
 import userResolvers from './userResolvers';
@@ -23,7 +23,7 @@ const resolversArray = [
   projectResolvers,
   replyResolvers,
   scoreResolvers,
-  // tagResolvers,
+  tagResolvers,
   taskResolvers,
   teamResolvers,
   userResolvers,
