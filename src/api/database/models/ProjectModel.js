@@ -37,6 +37,10 @@ const ProjectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Post',
   }],
+  tags: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Tag',
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

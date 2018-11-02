@@ -5,10 +5,17 @@ const TagSchema = new Schema({
     type: Schema.Types.ObjectId,
     auto: true,
   },
-  level: {
+  body: {
     type: String,
-    enum: ['TEST', 'JOG', 'RUNNING'],
     required: true,
+  },
+  posts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Post',
+  }],
+  project: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
   },
 });
 
