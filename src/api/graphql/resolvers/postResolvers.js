@@ -42,6 +42,7 @@ const postResolvers = {
         case 'DISCUSSION':
           if (parentId) throw new Error('Post doesnt need parent');
           post.title = title;
+          post.tags = [];
           break;
         case 'COMMENT': {
           if ((parentPost.postType !== 'TASK') && (parentPost.postType !== 'DISCUSSION')) {
