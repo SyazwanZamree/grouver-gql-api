@@ -112,7 +112,7 @@ export default `
     applause: Int
     applaudedBy: [User]
     comments: [Comment]
-    tags: [ID]
+    tags: [Tag]
   }
 
   type Discussion implements Post {
@@ -132,7 +132,7 @@ export default `
     applause: Int
     applaudedBy: [User]
     comments: [Comment]
-    tags: [ID]
+    tags: [Tag]
   }
 
   type Comment implements Post {

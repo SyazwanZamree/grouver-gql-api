@@ -42,6 +42,7 @@ export default `
     adminList: [User]
     memberList: [User]
     postList: [Post]
+    tags: [Tag]
     createdAt: String
     createdBy: ID
   }
