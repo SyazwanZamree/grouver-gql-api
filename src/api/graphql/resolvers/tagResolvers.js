@@ -1,5 +1,4 @@
 import checkUserAuthentication from './utils/authentication';
-// import { checkUserAuthorization } from './utils/authorization';
 
 const tagResolvers = {
   Query: {
@@ -81,14 +80,28 @@ const tagResolvers = {
       return tag;
     },
     assignPostToTag: async (parent,
-      { TagIdInput, PostIdInput },
+      { tagIdInput, postIdInput },
       { models, userSession, projectSession },
     ) => {
-      console.log('TagIdInput: ', TagIdInput);
-      console.log('PostIdInput: ', PostIdInput);
-      console.log('models: ', models);
-      console.log('userSession: ', userSession);
-      console.log('projectSession: ', projectSession);
+      checkUserAuthentication(userSession, projectSession);
+
+      const tag = await models.Tag.findById(tagIdInput);
+      const post = await models.Post.findById(postIdInput);
+      const postIndex = tag.posts.indexOf(postIdInput);
+
+      if (postIndex > -1) throw new Error('post already tagged');
+
+      tag.posts = tag.posts.concat(postIdInput);
+      tag.save()
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      post.tags = post.tags.concat(tagIdInput);
+      post.save()
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return tag;
     },
   },
   Tag: {
