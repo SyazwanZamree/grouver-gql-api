@@ -23,10 +23,15 @@ const tagResolvers = {
       return tag;
     },
     searchTag: async (parent, { input }, { models, userSession, projectSession }) => {
-      console.log('input: ', input);
-      console.log('models: ', models);
-      console.log('userSession: ', userSession);
-      console.log('projectSession: ', projectSession);
+      if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
+
+      const results = await models.Tag.find({
+        body: { $regex: input, $options: 'i' },
+      })
+        .then(d => d)
+        .catch(e => console.log('e: ', e));
+
+      return results;
     },
   },
   Mutation: {
