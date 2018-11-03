@@ -17,7 +17,12 @@ const tagResolvers = {
       if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const tag = await models.Tag.findById(id)
-        .then(d => d)
+        .then((d) => {
+          if (JSON.stringify(d.project) !== JSON.stringify(projectSession.id)) {
+            throw new Error('unauthorized');
+          }
+          return d;
+        })
         .catch(e => console.log('e', e));
 
       return tag;
@@ -26,9 +31,20 @@ const tagResolvers = {
       if (!projectSession || userSession.invalidToken) throw new Error('unauthorized');
 
       const results = await models.Tag.find({
-        body: { $regex: input, $options: 'i' },
+        body: {
+          $regex: input,
+          $options: 'i',
+        },
       })
-        .then(d => d)
+        .then((d) => {
+          const authTags = [];
+          d.forEach((e) => {
+            if (JSON.stringify(e.project) === JSON.stringify(projectSession.id)) {
+              authTags.push(e);
+            }
+          });
+          return authTags;
+        })
         .catch(e => console.log('e: ', e));
 
       return results;
