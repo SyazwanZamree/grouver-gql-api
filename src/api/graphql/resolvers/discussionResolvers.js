@@ -104,6 +104,14 @@ const discussionResolvers = {
       });
       return followers;
     },
+    tags: (parent, args, { models }) => {
+      const tags = [];
+      parent.tags.forEach((e) => {
+        const tag = models.Tag.findById(e);
+        tags.push(tag);
+      });
+      return tags;
+    },
     applaudedBy: (parent, args, { models }) => {
       const users = [];
       parent.applaudedBy.forEach((e) => {

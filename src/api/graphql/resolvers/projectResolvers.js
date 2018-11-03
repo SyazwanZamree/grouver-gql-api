@@ -203,6 +203,14 @@ const projectResolvers = {
       });
       return postList;
     },
+    tags: (parent, args, { models }) => {
+      const tags = [];
+      parent.tags.forEach((e) => {
+        const tag = models.Tag.findById(e);
+        tags.push(tag);
+      });
+      return tags;
+    },
   },
 };
 
