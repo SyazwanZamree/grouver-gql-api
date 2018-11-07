@@ -1,6 +1,6 @@
 import { mergeResolvers } from 'merge-graphql-schemas';
 import avatarResolvers from './avatarResolvers';
-import badgeResolvers from './badgeResolvers';
+// import badgeResolvers from './badgeResolvers';
 import commentResolvers from './commentResolvers';
 import discussionResolvers from './discussionResolvers';
 import notificationResolvers from './notificationResolvers';
@@ -15,7 +15,7 @@ import userResolvers from './userResolvers';
 
 const resolversArray = [
   avatarResolvers,
-  badgeResolvers,
+  // badgeResolvers,
   commentResolvers,
   discussionResolvers,
   notificationResolvers,

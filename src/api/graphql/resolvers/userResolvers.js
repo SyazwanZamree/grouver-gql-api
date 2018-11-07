@@ -209,7 +209,6 @@ const userResolvers = {
     },
     notifications: parent => parent.notifications,
     experiencePoint: parent => parent.experiencePoint,
-    badges: parent => parent.badges,
     createdAt: parent => parent.createdAt,
   },
 };
