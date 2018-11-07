@@ -74,7 +74,14 @@ export default `
     postsFollowing: [Post]
     notifications: [Notification]
     experiencePoint: Int
-    badges: [Badge]
+
+    orangeBadges: [OrangeBadge]
+    yellowBadges: [YellowBadge]
+    greenBadges: [GreenBadge]
+    blueBadges: [BlueBadge]
+    indigoBadges: [IndigoBadge]
+    purpleBadges: [PurpleBadge]
+
     createdAt: String
   }
 `;
