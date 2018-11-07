@@ -5,9 +5,8 @@ const BadgeSchema = new Schema({
     type: Schema.Types.ObjectId,
     auto: true,
   },
-  name: {
+  description: {
     type: String,
-    unique: true,
     required: true,
   },
 });
